@@ -55,9 +55,18 @@
       <div class="row">
         {% for col_num in myrange_x %}
         
-          {% with index=row_num|add:col_num %}
+          {% with index=row_num|add:'-'|add:col_num %}
 
             <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+
+             
+              {% if not index in dbdic %}
+
+              <small>x{{row_num}}-{{ col_num }}</small>
+
+
+              {%endif%}
+
             
             {% for square2 in dbsquares %}
 
@@ -88,6 +97,7 @@
             </div>
         
           {% endwith %}
+          
       {% endfor %}
         
         <br>
@@ -103,7 +113,9 @@
       {% csrf_token %}
 
 
-
+      {% for key, value in dbdic.items %}
+      {{ key }}: {{ value }}<br>
+  {% endfor %}
       <select name="dropdown" onchange="updatePanel('changemode',2,dropdown.options[dropdown.selectedIndex].value)">
         <label for="dropdown">Select an option:</label>
         <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>move</option>

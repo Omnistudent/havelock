@@ -15,15 +15,15 @@ import math
 
 def grid(request):
 
-    grid_size_x = 20
-    grid_size_y = 20
+    grid_size_x = 10
+    grid_size_y = 10
     square_size = 30
     
     user=request.user
 
-    myrange=range(0,20)
-    myrange_x=range(0,20)
-    myrange_y=range(0,20)
+    myrange=range(0,10)
+    myrange_x=range(0,10)
+    myrange_y=range(0,10)
     
     if request.method == 'POST':
         
@@ -84,8 +84,9 @@ def grid(request):
             charsx = [str(i) for i in range(startx-3, stopx+2)]
             charsy = [str(i) for i in range(starty-3, stopy+2)]
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+            square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
             #dbsquares = Square.objects.all() 
-            return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size}) 
+            return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
        
 
         else:
@@ -140,6 +141,7 @@ def grid(request):
             charsx = [str(i) for i in range(startx-3, stopx+2)]
             charsy = [str(i) for i in range(starty-3, stopy+2)]
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+            square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
             
             #dbsquares = Square.objects.all() 
 
@@ -177,8 +179,8 @@ def grid(request):
         charsx = [str(i) for i in range(startx-3, stopx+2)]
         charsy = [str(i) for i in range(starty-3, stopy+2)]
         dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-        square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
-        print(square_dict)
+        square_dict = {f"{int(square.y)}-{int(square.x)}": square for square in dbsquares}
+        
         #for squared in dbsquares:
         #    squared.occupants3.remove(user.userprofile)
         #    squared.save()
@@ -200,7 +202,7 @@ def get_squares(xrange,yrange):
             row.append(image_name)
         squares.append(row)
 
-    print(squares[10][10])
+   
     return squares
 
 def moveallowed(x,y):
