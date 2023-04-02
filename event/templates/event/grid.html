@@ -1,0 +1,193 @@
+{% extends 'event/base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clickable Squares</title>
+    <style>
+
+.transparent-image {
+  position: relative;
+  top: -300;
+  left: 0;
+
+  z-index: 1;
+}
+
+
+      .square {
+        width: {{ square_size }}px;
+        height: {{ square_size }}px;
+        display: inline-block;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
+      .panel {
+        width: 200px;
+        height: 50%;
+        position: fixed;
+        top: 200px;
+        right: 0px;
+        background-color: white;
+        border-left: 1px solid rgb(0, 0, 0);
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      .panel-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .panel-content {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+
+
+    <form id="click-form" method="post" action="/grid">
+      {% csrf_token %}
+      {% for row_num in myrange_y %}
+  
+      <div class="row">
+        {% for col_num in myrange_x %}
+        
+          {% with index=row_num|add:col_num %}
+
+            <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+            
+            {% for square2 in dbsquares %}
+
+              {% if square2.x == row_num|stringformat:"s" and square2.y == col_num|stringformat:"s" %}
+            
+              <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+                
+                {% if user.userprofile in square2.occupants3.all %}
+                
+                
+                
+                <img src="event/image_ship.png">
+               
+                
+                {% else %}
+                <img src="{{square2.image}}">
+
+                {% endif %}
+
+              <!--<img src="{{square2.image}}">-->
+             
+              </div>
+              {% endif %}
+            {% endfor %}
+            </div>
+        
+          {% endwith %}
+      {% endfor %}
+        
+        <br>
+    {% endfor %}
+
+    <button onclick="updatePanel('nav','y+1')">Up</button>
+    <button onclick="updatePanel('nav','y-1')">Down</button>
+    <button onclick="updatePanel('nav','x-1')">Left</button>
+    <button onclick="updatePanel('nav','x+1')">Right</button>
+    </form>
+
+    <form id="my-form" method="post" action="/grid">
+      {% csrf_token %}
+
+
+
+      <select name="dropdown" onchange="updatePanel('changemode',2,dropdown.options[dropdown.selectedIndex].value)">
+        <label for="dropdown">Select an option:</label>
+        <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>move</option>
+        <option value="paint sea" {% if user.userprofile.mode == 'paint sea' %} selected {% endif %}>paint sea</option>
+        <option value="paint land" {% if user.userprofile.mode == 'paint land' %} selected {% endif %}>paint land</option>
+    </select>
+    
+  </form>
+
+    <div class="panel">
+      <div class="panel-title">Info:</div>
+      User:{{user.userprofile}}
+      <br>
+      x position: {{user.userprofile.xpos}}<br>
+      y position: {{user.userprofile.ypos}}<br>
+      <br>
+      view<br>
+      x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
+
+      <!--<div class="panel-content" id="clicked-square">None</div>-->
+      <form>
+        <h3>Select an option:</h3>
+        <input type="radio" id="option1" name="options" value="option1" checked>
+        <label for="option1">Option 1</label><br>
+        <input type="radio" id="option2" name="options" value="option2">
+        <label for="option2">Option 2</label><br>
+        <input type="radio" id="option3" name="options" value="option3">
+        <label for="option3">Option 3</label><br>
+      </form>
+    </div>
+
+    <div id="side-panel">
+      <form>
+        <h3>Select an option:</h3>
+        <input type="radio" id="option1" name="options" value="option1" checked>
+        <label for="option1">Option 1</label><br>
+        <input type="radio" id="option2" name="options" value="option2">
+        <label for="option2">Option 2</label><br>
+        <input type="radio" id="option3" name="options" value="option3">
+        <label for="option3">Option 3</label><br>
+      </form>
+    </div>
+
+    <script>
+
+function updatePanel(row, col, dropdownValue) {
+  
+    var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'square';
+    input.value = row + '*' + col;
+    
+    var dropdownInput = document.createElement('input');
+    dropdownInput.type = 'hidden';
+    dropdownInput.name = 'dropdown_value';
+    dropdownInput.value = dropdownValue;
+    //alert("Selected value: " + dropdownValue);
+    //console.log('Dropdown value:', document.getElementById('dropdown').value);
+    
+    var form = document.getElementById('click-form');
+    form.appendChild(input);
+    form.appendChild(dropdownInput);
+    form.submit();
+  }
+
+  function handleDropdownChange() {
+  var dropdown = document.getElementById("dropdown-menu");
+  var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+  var input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'square';
+    input.value = "2" + '*' + "2";
+    
+    var dropdownInput = document.createElement('input');
+    dropdownInput.type = 'hidden';
+    dropdownInput.name = 'dropdown_value';
+    dropdownInput.value = dropdownValue;
+    
+    var form = document.getElementById('click-form');
+    form.appendChild(input);
+    form.appendChild(dropdownInput);
+    form.submit();
+}
+
+    </script>
+  </body>
+</html>
+{% endblock %}

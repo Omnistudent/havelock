@@ -1,0 +1,155 @@
+
+{% extends 'event/base.html' %}
+
+{% block content %}
+<html>
+  <head>
+    <title>Clickable Squares</title>
+    <style>
+      .square {
+        width: {{ square_size }}px;
+        height: {{ square_size }}px;
+        display: inline-block;
+        margin: 0px;
+        padding: 0px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
+      .panel {
+        width: 200px;
+        height: 100%;
+        position: fixed;
+        top: 60px;
+        right: 0px;
+        background-color: white;
+        border-left: 1px solid black;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      .panel-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .panel-content {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  
+  
+  <body>
+      <form id="click-form" method="post" action="/grid">
+      {% csrf_token %}
+    {% for square in squares %}
+      {% with id=forloop.counter0 %}
+		{% for dbsquare in dbsquares %}
+		{% if dbsquare.x == id|stringformat:"s" %}
+		    <div class="square" style="background-color: powderblue" onclick="updatePanel({{ id }})"> 
+	<img id="square{{ id }}" src={{dbsquare.image}} width="30" height="30">
+	</div>
+	<input type="hidden" name="square_id" value="{{ id }}">
+		
+		<!--<img src="{{dbsquare.image}}">-->
+		
+		{% else %}
+				    <div class="square" style="background-color: powderblue" onclick="updatePanel({{ id }})"> 
+	<img id="square{{ id }}" src={{dbsquare.image}} width="30" height="30">
+	</div>
+	<input type="hidden" name="square_id" value="{{ id }}">
+		{% endif %}
+
+	{% endfor %}
+	
+	
+	
+	<!--
+    <div class="square" style="background-color: powderblue" onclick="updatePanel({{ id }})"> 
+	<img id="square{{ id }}" src={{square.image}} width="30" height="30">
+	</div>
+	<input type="hidden" name="square_id" value="{{ id }}">
+	
+	-->
+		
+
+	
+	
+	
+	
+	
+	
+
+	
+
+      {% endwith %}
+      {% if forloop.counter|divisibleby:20 %}
+        <br>
+      {% endif %}
+    {% endfor %}
+	
+	
+	 </form>
+	
+
+	<div class="grid-container">
+  <form method="POST" action="/">
+    {% csrf_token %}
+    {% for row in squares %}
+      {% for image_name in row %}
+        <div class="square">
+          <input type="hidden" name="x" value="{{ forloop.parentloop.counter0 }}">
+          <input type="hidden" name="y" value="{{ forloop.counter0 }}">
+		<style="background-color: powderblue" onclick="updatePanel({{ id }})"> 
+		<!--<img id="square{{ id }}" src={{dbsquare.image}} width="30" height="30">-->
+
+        </div>
+			  {% if forloop.parentloop.counter0 == 20 %}
+        {{ forloop.parentloop.counter0 }}
+		<br>
+      {% endif %}
+
+      {% endfor %}
+	  
+    {% endfor %}
+  </form>
+</div>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+    <div class="panel">
+      <div class="panel-title">Clicked Square</div>
+	  User:{{user}}
+      <div class="panel-content" id="clicked-square">None</div>
+    </div>
+
+    <script>
+      function updatePanel(id) {
+        var clickedSquare = document.getElementById('clicked-square');
+        clickedSquare.innerHTML = id;
+
+        var squareImg = document.getElementById('square' + id);
+        squareImg.src = '/event/image_ship.png';
+		document.getElementById('click-form').submit();
+      }
+    </script>
+  </body>
+</html>
+{% endblock %}

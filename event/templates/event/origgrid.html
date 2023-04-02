@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Clickable Squares</title>
+    <style>
+      .square {
+        width: {{ square_size }}px;
+        height: {{ square_size }}px;
+        display: inline-block;
+        margin: 0px;
+        padding: 0px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    {% for square in squares %}
+     
+        <div class="square" style="background-color: powderblue"> </div>
+    
+      {% if forloop.counter|divisibleby:20 %}
+        <br>
+      {% endif %}
+    {% endfor %}
+  </body>
+</html>
