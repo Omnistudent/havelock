@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Ships</a>
+    <a class="navbar-brand" href="{% url 'home' %}">Omnistudent</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,7 +8,7 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'home' '2021' 'March' %}">Calendar</a>
+          <a class="nav-link" href="{% url 'home' '2021' 'March' %}">Kalender</a>
         </li>
 
         
@@ -21,30 +21,31 @@
         </li>
       {%endif %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          <a class="nav-link" href="{% url 'logout' %}">Logga Ut</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'grid' %}">Grid</a>
+          <a class="nav-link" href="{% url 'grid' %}">KARTA</a>
         </li>
       {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'register_user' %}">Register</a>
+          <a class="nav-link" href="{% url 'register_user' %}">Ny Inloggning</a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-link" href="{% url 'login' %}">Logga in</a>
         </li>
 
 
       {% endif %}
 
       </ul>
-      <form class="d-flex" method=POST action="{% url 'home' %}">
+     <!-- <form class="d-flex" method=POST action="{% url 'home' %}">
         {% csrf_token %}
 
         <input class="form-control me-2" type="search" placeholder="Search Venues" aria-label="Search" name="searched">
         <button class="btn btn-outline-secondary" type="submit">Search</button>
       </form>
+      -->
     </div>
   </div>
 </nav>
