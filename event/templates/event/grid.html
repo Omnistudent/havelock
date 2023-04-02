@@ -48,8 +48,6 @@
     </style>
   </head>
   <body>
-
-
     <form id="click-form" method="post" action="/grid">
       {% csrf_token %}
       {% for row_num in myrange_y %}
@@ -75,8 +73,10 @@
                
                 
                 {% else %}
-                <img src="{{square2.image}}">
+               <!--<img src="{{square2.image}}">-->
+               <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
 
+              
                 {% endif %}
 
               <!--<img src="{{square2.image}}">-->

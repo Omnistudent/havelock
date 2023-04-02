@@ -15,6 +15,8 @@ import math
 
 def grid(request):
 
+    
+
     grid_size_x = 20
     grid_size_y = 20
     square_size = 30
@@ -113,13 +115,13 @@ def grid(request):
                 try:
                     square = Square.objects.get(x=x, y=y)
                 except Square.DoesNotExist:
-                    square = Square.objects.create(x=x, y=y, name='sea4', image='event/sea.png',)
+                    square = Square.objects.create(x=x, y=y, name='sea4', image='sea.png',)
 
             elif user.userprofile.mode=='paint land':
                 try:
                     square = Square.objects.get(x=x, y=y)
                 except Square.DoesNotExist:
-                    square = Square.objects.create(x=x, y=y, name='sea4', image='event/land.png',)
+                    square = Square.objects.create(x=x, y=y, name='land1', image='land.png',)
 
             myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
             myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
@@ -135,6 +137,9 @@ def grid(request):
         user = request.user
         myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
         squares=get_squares(myrange_x,myrange_y)
+        #for square in Square.objects.all():
+        #    square.image = square.image.replace('image.png', 'sea.png')
+        #    square.save()
 
 
         #dbsquares = Square.objects.filter(image="event/image.png")
