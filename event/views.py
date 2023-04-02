@@ -15,8 +15,6 @@ import math
 
 def grid(request):
 
-    
-
     grid_size_x = 20
     grid_size_y = 20
     square_size = 30
@@ -78,8 +76,15 @@ def grid(request):
                 myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)                    
 
             squares=get_squares(myrange_x,myrange_y)
+            startx = int(user.userprofile.x)
+            stopx = int(user.userprofile.x)+grid_size_x
+            starty = int(user.userprofile.y)
+            stopy = int(user.userprofile.y)+grid_size_y
 
-            dbsquares = Square.objects.all() 
+            charsx = [str(i) for i in range(startx-3, stopx+2)]
+            charsy = [str(i) for i in range(starty-3, stopy+2)]
+            dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+            #dbsquares = Square.objects.all() 
             return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size}) 
        
 
@@ -126,8 +131,17 @@ def grid(request):
             myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
             myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
             squares=get_squares(myrange_x,myrange_y)
+
+            startx = int(user.userprofile.x)
+            stopx = int(user.userprofile.x)+grid_size_x
+            starty = int(user.userprofile.y)
+            stopy = int(user.userprofile.y)+grid_size_y
+
+            charsx = [str(i) for i in range(startx-3, stopx+2)]
+            charsy = [str(i) for i in range(starty-3, stopy+2)]
+            dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
             
-            dbsquares = Square.objects.all() 
+            #dbsquares = Square.objects.all() 
 
         return redirect('grid')
     
@@ -136,6 +150,7 @@ def grid(request):
 
         user = request.user
         myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+        myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
         squares=get_squares(myrange_x,myrange_y)
         #for square in Square.objects.all():
         #    square.image = square.image.replace('image.png', 'sea.png')
@@ -153,14 +168,24 @@ def grid(request):
         #dbsquare.occupants3.add(user.userprofile)
         
         #dbsquares = Square.objects.all()
-        dbsquares = Square.objects.all()
+        #dbsquares = Square.objects.all()
+        startx = int(user.userprofile.x)
+        stopx = int(user.userprofile.x)+grid_size_x
+        starty = int(user.userprofile.y)
+        stopy = int(user.userprofile.y)+grid_size_y
+
+        charsx = [str(i) for i in range(startx-3, stopx+2)]
+        charsy = [str(i) for i in range(starty-3, stopy+2)]
+        dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+        square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
+        print(square_dict)
         #for squared in dbsquares:
         #    squared.occupants3.remove(user.userprofile)
         #    squared.save()
         
         #for i in dbsquares:
         #    print(i.occupants3.all())
-        return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size}) 
+        return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
 
 def get_squares(xrange,yrange):
     squares = []
@@ -171,7 +196,7 @@ def get_squares(xrange,yrange):
                 square = Square.objects.get(x=x, y=y)
                 image_name = square.image
             except Square.DoesNotExist:
-                image_name = 'event/null.png'
+                image_name = 'null.png'
             row.append(image_name)
         squares.append(row)
 
@@ -180,7 +205,7 @@ def get_squares(xrange,yrange):
 
 def moveallowed(x,y):
     endsquare = Square.objects.get(x=x, y=y)
-    if endsquare.image=='event/land.png':
+    if endsquare.image=='land.png':
         return False
     return True
 
