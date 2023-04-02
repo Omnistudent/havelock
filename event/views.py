@@ -10,7 +10,7 @@ from .models import UserProfile
 import random
 from django.http import HttpResponse
 from django.http import JsonResponse
-import json
+#import json
 import math 
 
 def grid(request):
