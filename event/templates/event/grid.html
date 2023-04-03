@@ -48,65 +48,46 @@
     </style>
   </head>
   <body>
+    
+    
+    <div class="card" style="width: 30rem;">
     <form id="click-form" method="post" action="/grid">
       {% csrf_token %}
       {% for row_num in myrange_y %}
   
       <div class="row">
         {% for col_num in myrange_x %}
-        
           {% with index=row_num|add:'-'|add:col_num %}
-
             <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
-
-             
-              {% if not index in dbdic %}
-
+              {% if index in dbdic %}
               <small>x{{row_num}}-{{ col_num }}</small>
-
-
               {%endif%}
-
-            
-            {% for square2 in dbsquares %}
-
-              {% if square2.x == row_num|stringformat:"s" and square2.y == col_num|stringformat:"s" %}
-            
-              <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
-                
-                {% if user.userprofile in square2.occupants3.all %}
-                
-                
-                
-                <!--<img src="event/image_ship.png">-->
-                <img src="{{ STATIC_URL }}event/images/image_ship.png">
-               
-                
-                {% else %}
-               <!--<img src="{{square2.image}}">-->
-               <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
-
-              
+              {% for square2 in dbsquares %}
+                {% if square2.x == row_num|stringformat:"s" and square2.y == col_num|stringformat:"s" %}                  
+                  <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
+                  {% if user.userprofile in square2.occupants3.all %}
+                    <!--<img src="event/image_ship.png">-->
+                    <img src="{{ STATIC_URL }}event/images/image_ship.png">
+                  {% else %}
+                    <!--<img src="{{square2.image}}">-->
+                    <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
+                  {% endif %}
+                  </div>
                 {% endif %}
-
-              <!--<img src="{{square2.image}}">-->
-             
-              </div>
-              {% endif %}
-            {% endfor %}
+              {% endfor %}
             </div>
-        
-          {% endwith %}
-          
-      {% endfor %}
-        
-        <br>
+          {% endwith %}      
+        {% endfor %}
+      </div>  
     {% endfor %}
+  </div>
 
-    <button onclick="updatePanel('nav','y+1')">Up</button>
-    <button onclick="updatePanel('nav','y-1')">Down</button>
-    <button onclick="updatePanel('nav','x-1')">Left</button>
-    <button onclick="updatePanel('nav','x+1')">Right</button>
+    <br>
+
+    <button onclick="updatePanel('nav','y+1')" class="btn btn-success btn-sm">Up</button>
+    <button onclick="updatePanel('nav','y-1')" class="btn btn-success btn-sm">Down</button>
+    <button onclick="updatePanel('nav','x-1')" class="btn btn-success btn-sm">Left</button>
+    <button onclick="updatePanel('nav','x+1')" class="btn btn-success btn-sm">Right</button>
     </form>
 
     <form id="my-form" method="post" action="/grid">
