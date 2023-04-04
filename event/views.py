@@ -44,6 +44,7 @@ def grid(request):
         if x=='answer':
             print("answer")
             print(y)
+            print(user.userprofile.question.answer1_swedish)
             right_answer=user.userprofile.question.answer1_swedish
             if right_answer == y:
                 print('yes')
@@ -140,7 +141,7 @@ def grid(request):
             charsy = [str(i) for i in range(starty-3, stopy+2)]
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
             square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
-            question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+            question = Question.objects.filter(difficulty__lte=1).order_by('?').first()
             #question = Question.objects.filter(name='Correct_1').order_by('?').first()
             answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
             shuffle(answers)  # shuffles the answers randomly
@@ -149,11 +150,11 @@ def grid(request):
 
         else:
             #########################
-            #  Movement
+            #  wants to move
             #########################
             if user.userprofile.mode=="move":
                 print("mooooooooooooooooooove")
-                question = Question.objects.filter(difficulty__gte=0,area1='general').order_by('?').first()
+                question = Question.objects.filter(difficulty__lte=2,area1='general').order_by('?').first()
                 print('question')
                 print(question)
                 
@@ -162,7 +163,9 @@ def grid(request):
                 user.userprofile.pending_ypos=y
                 user.userprofile.question=question
                 user.userprofile.save()
-                
+                ###############
+                # Qustions set
+                ###############
                 if moveallowed(x,y):
 
                     myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
@@ -178,7 +181,10 @@ def grid(request):
                     charsy = [str(i) for i in range(starty-3, stopy+2)]
                     dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
                     square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
-                    question = Question.objects.filter(difficulty__gte=0,area1='general').order_by('?').first()
+                    #################
+                    # Question made
+                    #################
+                    question = user.userprofile.question
                     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                     shuffle(answers)  # shuffles the answers randomly
                     print(answers)
@@ -296,9 +302,9 @@ def get_squares(xrange,yrange):
     return squares
 
 def moveallowed(x,y):
-    endsquare = Square.objects.get(x=x, y=y)
-    if endsquare.image=='land.png':
-        return False
+    #endsquare = Square.objects.get(x=x, y=y)
+    #if endsquare.image=='land.png':
+    #    return False
     return True
 
 def grid2(request):
