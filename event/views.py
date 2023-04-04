@@ -51,17 +51,19 @@ def grid(request):
                 startsquare.occupants3.remove(user.userprofile)
                 startsquare.save()
 
-                user.userprofile.xpos=user.userprofile.pending_xpos
-                user.userprofile.ypos=user.userprofile.pending_ypos
-                user.userprofile.pending_xpos=4
-                user.userprofile.pending_ypos
-                user.userprofile.save()
-#
                 endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
-                #endsquare = Square.objects.get(x=x, y=y)
+                endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
                 endsquare.occupants3.add(user.userprofile)
                 endsquare.save()
                 
+
+                user.userprofile.xpos=user.userprofile.pending_xpos
+                user.userprofile.ypos=user.userprofile.pending_ypos
+                user.userprofile.pending_xpos=4
+                user.userprofile.pending_ypos=4
+                user.userprofile.save()
+#
+
                 print(endsquare.occupants3.all())
 
                 myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
@@ -78,7 +80,8 @@ def grid(request):
                 dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
                 square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                 
-                question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                question = Question.objects.filter(name='Correct_1').order_by('?').first()
+                #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 shuffle(answers)  # shuffles the answers randomly
                 return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
@@ -138,6 +141,7 @@ def grid(request):
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
             square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
             question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+            #question = Question.objects.filter(name='Correct_1').order_by('?').first()
             answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
             shuffle(answers)  # shuffles the answers randomly
             return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers}) 
@@ -149,7 +153,7 @@ def grid(request):
             #########################
             if user.userprofile.mode=="move":
                 print("mooooooooooooooooooove")
-                question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                question = Question.objects.filter(difficulty__gte=0,area1='general').order_by('?').first()
                 print('question')
                 print(question)
                 
@@ -158,6 +162,7 @@ def grid(request):
                 user.userprofile.pending_ypos=y
                 user.userprofile.question=question
                 user.userprofile.save()
+                
                 if moveallowed(x,y):
 
                     myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
@@ -173,7 +178,7 @@ def grid(request):
                     charsy = [str(i) for i in range(starty-3, stopy+2)]
                     dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
                     square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
-                    question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                    question = Question.objects.filter(difficulty__gte=0,area1='general').order_by('?').first()
                     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                     shuffle(answers)  # shuffles the answers randomly
                     print(answers)

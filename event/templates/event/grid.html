@@ -132,16 +132,7 @@
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
 
-      <!--<div class="panel-content" id="clicked-square">None</div>-->
-      <form>
-        Används inte:<br>
-        <input type="radio" id="option1" name="options" value="option1" checked>
-        <label for="option1">Option 1</label><br>
-        <input type="radio" id="option2" name="options" value="option2">
-        <label for="option2">Option 2</label><br>
-        <input type="radio" id="option3" name="options" value="option3">
-        <label for="option3">Option 3</label><br>
-      </form>
+      
     </div>
 
     <div id="side-panel" class="button-container">
@@ -152,7 +143,6 @@
         <br>
         {% for answer in answers %}
         
-            
             <button class="btn btn-primary" onclick="receiveAnswer('answer',{{ answer }})" name="answer" value="{{ answer }}">{{ answer }}</button>
             {% if forloop.counter|divisibleby:2 %}
                 <br>
