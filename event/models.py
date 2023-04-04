@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 
 
+
 #class UserXc(AbstractUser):
   #  x = models.IntegerField(null=True, blank=True)
   #  y = models.IntegerField(null=True, blank=True)
@@ -17,6 +18,32 @@ class Venue(models.Model):
 
 	def __str__(self):
 		return self.name
+	
+class Question(models.Model):
+    name=models.CharField('Question_name',max_length=120,default='question_name')
+    
+    question_swedish=models.CharField('question_swedish',max_length=1000,default='swedish_question')
+    answer1_swedish=models.CharField('answer1_swedish',max_length=1000,default='swedish_answer1')
+    answer2_swedish=models.CharField('answer2_swedish',max_length=1000,default='swedish_answer2')
+    answer3_swedish=models.CharField('answer3_swedish',max_length=1000,default='swedish_answer3')
+    answer4_swedish=models.CharField('answer4_swedish',max_length=1000,default='swedish_answer4')
+    
+    question_english=models.CharField('question_english',max_length=1000,default='english_question')
+    answer1_english=models.CharField('answer1_english',max_length=1000,default='english_answer1')
+    answer2_english=models.CharField('answer2_english',max_length=1000,default='english_answer2')
+    answer3_english=models.CharField('answer3_english',max_length=1000,default='english_answer3')
+    answer4_english=models.CharField('answer4_english',max_length=1000,default='english_answer4')
+    correct_answer=models.IntegerField('correct_answer',default=0)
+
+    difficulty=models.FloatField('difficulty',max_length=20,default='0.0')
+    area1=models.CharField('area1',max_length=1000,default='general')
+    area2=models.CharField('area2',max_length=1000,default='area2')
+    area3=models.CharField('area3',max_length=1000,default='area3')
+
+
+
+    def __str__(self):
+	    return self.name
 
 
 class Environment(models.Model):
@@ -48,8 +75,11 @@ class UserProfile(models.Model):
 	y = models.IntegerField("y",default=0)
 	xpos = models.IntegerField("xpos",default=0)
 	ypos = models.IntegerField("ypos",default=0)
+	pending_xpos = models.IntegerField("pending_xpos",default=0)
+	pending_ypos = models.IntegerField("pending_ypos",default=0)
 	#mapsquare = models.ForeignKey(Mapsquare,on_delete=models.DO_NOTHING)
 	mode = models.CharField('mode',max_length=30,blank=True)
+	question=models.ForeignKey(Question, blank=True,null=True,on_delete=models.CASCADE)
 	def __str__(self):
 		return str(self.user)
 	
@@ -119,4 +149,5 @@ class Event(models.Model):
 
     def __str__(self):
 	    return self.name
+
 

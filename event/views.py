@@ -7,7 +7,9 @@ from .models import Event
 from .models import Square
 from .models import MyPlayer
 from .models import UserProfile
+from .models import Question
 import random
+from random import shuffle
 from django.http import HttpResponse
 from django.http import JsonResponse
 #import json
@@ -29,23 +31,73 @@ def grid(request):
         
         square_str = request.POST.get('square')
         dropdown_str = request.POST.get('dropdown_value')
+        square_str2 = request.POST.get('square2')
+
+
 
         # Get x y of square, or mode
         x, y = square_str.split('*')
+        print('xy')
         print(x)
         print(y)
+ 
+        if x=='answer':
+            print("answer")
+            print(y)
+            right_answer=user.userprofile.question.answer1_swedish
+            if right_answer == y:
+                print('yes')
+                startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
+                startsquare.occupants3.remove(user.userprofile)
+                startsquare.save()
 
-        if x=='changemode':
-            print(dropdown_str)
+                user.userprofile.xpos=user.userprofile.pending_xpos
+                user.userprofile.ypos=user.userprofile.pending_ypos
+                user.userprofile.pending_xpos=4
+                user.userprofile.pending_ypos
+                user.userprofile.save()
+#
+                endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
+                #endsquare = Square.objects.get(x=x, y=y)
+                endsquare.occupants3.add(user.userprofile)
+                endsquare.save()
+                
+                print(endsquare.occupants3.all())
+
+                myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+                myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
+                squares=get_squares(myrange_x,myrange_y)
+
+                startx = int(user.userprofile.x)
+                stopx = int(user.userprofile.x)+grid_size_x
+                starty = int(user.userprofile.y)
+                stopy = int(user.userprofile.y)+grid_size_y
+
+                charsx = [str(i) for i in range(startx-3, stopx+2)]
+                charsy = [str(i) for i in range(starty-3, stopy+2)]
+                dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+                square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
+                
+                question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                shuffle(answers)  # shuffles the answers randomly
+                return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
+
+
+            else:
+                print('wrong')
+
+        elif x=='changemode':
+ 
             
             user.userprofile.mode=dropdown_str
             user.userprofile.save()
-            print(user.userprofile.mode)
+
+        
 
 
         elif x=='nav':
-            print('y')
-            print(y)
+
             if y=='x+1':
                 temp=user.userprofile.x
                 user.userprofile.x=temp+1
@@ -85,8 +137,10 @@ def grid(request):
             charsy = [str(i) for i in range(starty-3, stopy+2)]
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
             square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
-            #dbsquares = Square.objects.all() 
-            return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
+            question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+            answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+            shuffle(answers)  # shuffles the answers randomly
+            return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers}) 
        
 
         else:
@@ -95,27 +149,55 @@ def grid(request):
             #########################
             if user.userprofile.mode=="move":
                 print("mooooooooooooooooooove")
+                question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                print('question')
+                print(question)
+                
+
+                user.userprofile.pending_xpos=x
+                user.userprofile.pending_ypos=y
+                user.userprofile.question=question
+                user.userprofile.save()
                 if moveallowed(x,y):
 
-                    p1=[user.userprofile.xpos,user.userprofile.ypos]
-                    print("userpos is" +str(p1))
-                    p2=[int(x),int(y)]
-                    pdist=math.dist(p1,p2)
-                    if pdist<1.5:
-                   
-                   
-                        startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
-                        startsquare.occupants3.remove(user.userprofile)
-                        startsquare.save()
+                    myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+                    myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
+                    squares=get_squares(myrange_x,myrange_y)
 
-                        user.userprofile.xpos=int(x)
-                        user.userprofile.ypos=int(y)
-                        user.userprofile.save()
+                    startx = int(user.userprofile.x)
+                    stopx = int(user.userprofile.x)+grid_size_x
+                    starty = int(user.userprofile.y)
+                    stopy = int(user.userprofile.y)+grid_size_y
 
+                    charsx = [str(i) for i in range(startx-3, stopx+2)]
+                    charsy = [str(i) for i in range(starty-3, stopy+2)]
+                    dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+                    square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
+                    question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+                    answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                    shuffle(answers)  # shuffles the answers randomly
+                    print(answers)
+                    return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
 
-                        endsquare = Square.objects.get(x=x, y=y)
-                        endsquare.occupants3.add(user.userprofile)
-                        endsquare.save()
+                    #p1=[user.userprofile.xpos,user.userprofile.ypos]
+                    #print("userpos is" +str(p1))
+                    #p2=[int(x),int(y)]
+                    #pdist=math.dist(p1,p2)
+                    #if pdist<1.5:
+                    #
+                    #                 
+                   #
+                    #    startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
+                     #   startsquare.occupants3.remove(user.userprofile)
+                      #  startsquare.save()
+#
+ #                       user.userprofile.xpos=int(x)
+  #                      user.userprofile.ypos=int(y)
+   #                     user.userprofile.save()
+#
+#                       endsquare = Square.objects.get(x=x, y=y)
+ #                       endsquare.occupants3.add(user.userprofile)
+  #                      endsquare.save()
 
             elif user.userprofile.mode=='paint sea':
                 try:
@@ -142,6 +224,7 @@ def grid(request):
             charsy = [str(i) for i in range(starty-3, stopy+2)]
             dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
             square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
+
             
             #dbsquares = Square.objects.all() 
 
@@ -187,7 +270,9 @@ def grid(request):
         
         #for i in dbsquares:
         #    print(i.occupants3.all())
-        return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
+        question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+        return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question}) 
+        #return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
 
 def get_squares(xrange,yrange):
     squares = []

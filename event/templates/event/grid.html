@@ -7,6 +7,19 @@
     <title>Karta</title>
     <style>
 
+.button-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .button-container button {
+        width: 200px;
+        height: 70px;
+        margin: 10px;
+        font-size: 20px;
+    }
+
 .transparent-image {
   position: relative;
   top: -300;
@@ -50,11 +63,13 @@
   <body>
     
     
-    <div class="card" style="width: 30rem;">
+    <div class="card" style="width: 20rem;">
     <form id="click-form" method="post" action="/grid">
       {% csrf_token %}
       {% for row_num in myrange_y %}
   
+
+      
       <div class="row">
         {% for col_num in myrange_x %}
           {% with index=row_num|add:'-'|add:col_num %}
@@ -83,23 +98,22 @@
   </div>
 
     <br>
-
+    Ändra vy
+    
+    <br>
     <button onclick="updatePanel('nav','y+1')" class="btn btn-success btn-sm">Up</button>
     <button onclick="updatePanel('nav','y-1')" class="btn btn-success btn-sm">Down</button>
     <button onclick="updatePanel('nav','x-1')" class="btn btn-success btn-sm">Left</button>
     <button onclick="updatePanel('nav','x+1')" class="btn btn-success btn-sm">Right</button>
     </form>
-
+    <br>
+    Ändra mode
     <form id="my-form" method="post" action="/grid">
       {% csrf_token %}
 
-
-      {% for key, value in dbdic.items %}
-      {{ key }}: {{ value }}<br>
-  {% endfor %}
       <select name="dropdown" onchange="updatePanel('changemode',2,dropdown.options[dropdown.selectedIndex].value)">
         <label for="dropdown">Select an option:</label>
-        <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>move</option>
+        <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>flytta</option>
         <option value="paint sea" {% if user.userprofile.mode == 'paint sea' %} selected {% endif %}>paint sea</option>
         <option value="paint land" {% if user.userprofile.mode == 'paint land' %} selected {% endif %}>paint land</option>
     </select>
@@ -112,13 +126,15 @@
       <br>
         position x: {{user.userprofile.xpos}}<br>
         position y: {{user.userprofile.ypos}}<br>
+        pending position x: {{user.userprofile.pending_xpos}}<br>
+        position y: {{user.userprofile.pending_ypos}}<br>
       <br>
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
 
       <!--<div class="panel-content" id="clicked-square">None</div>-->
       <form>
-        <h3>Select an option:</h3>
+        Används inte:<br>
         <input type="radio" id="option1" name="options" value="option1" checked>
         <label for="option1">Option 1</label><br>
         <input type="radio" id="option2" name="options" value="option2">
@@ -128,17 +144,26 @@
       </form>
     </div>
 
-    <div id="side-panel">
-      <form>
-        <h3>Select an option:</h3>
-        <input type="radio" id="option1" name="options" value="option1" checked>
-        <label for="option1">Option 1</label><br>
-        <input type="radio" id="option2" name="options" value="option2">
-        <label for="option2">Option 2</label><br>
-        <input type="radio" id="option3" name="options" value="option3">
-        <label for="option3">Option 3</label><br>
-      </form>
+    <div id="side-panel" class="button-container">
+      <div class="button-container">
+      <form method="post" id="question-form" >
+        {% csrf_token %}
+        {{question.question_swedish}}
+        <br>
+        {% for answer in answers %}
+        
+            
+            <button class="btn btn-primary" onclick="receiveAnswer('answer',{{ answer }})" name="answer" value="{{ answer }}">{{ answer }}</button>
+            {% if forloop.counter|divisibleby:2 %}
+                <br>
+            {% endif %}
+        {% endfor %}
+    </form>
+  </div>
     </div>
+
+
+  
 
     <script>
 
@@ -161,6 +186,26 @@ function updatePanel(row, col, dropdownValue) {
     form.appendChild(dropdownInput);
     form.submit();
   }
+
+  function receiveAnswer(row, col, dropdownValue) {
+  
+  var input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'square';
+  input.value = row + '*' + col;
+  
+  var dropdownInput = document.createElement('input');
+  dropdownInput.type = 'hidden';
+  dropdownInput.name = 'dropdown_value';
+  dropdownInput.value = dropdownValue;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(input);
+  form.appendChild(dropdownInput);
+  form.submit();
+}
 
   function handleDropdownChange() {
   var dropdown = document.getElementById("dropdown-menu");

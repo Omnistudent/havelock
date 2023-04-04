@@ -7,6 +7,7 @@ from .models import MyClubUser
 from .models import Event
 from .models import UserProfile
 from .models import UserProfile2
+from .models import Question
 admin.site.register(Environment)
 admin.site.register(Square)
 admin.site.register(MyPlayer)
@@ -15,3 +16,4 @@ admin.site.register(MyClubUser)
 admin.site.register(Event)
 admin.site.register(UserProfile)
 admin.site.register(UserProfile2)
+admin.site.register(Question)
