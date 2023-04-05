@@ -141,6 +141,7 @@
         {% csrf_token %}
         {{question.question_swedish}}
         <br>
+        {% if question.question_swedish != "Rätt!" %}
         {% for answer in answers %}
         
             
@@ -150,6 +151,8 @@
                 <br>
             {% endif %}
         {% endfor %}
+        {% endif %}
+
     </form>
   </div>
     </div>
@@ -200,7 +203,7 @@ function updatePanel(row, col, dropdownValue) {
   form.appendChild(input);
   form.appendChild(dropdownInput);
   form.submit();
-  alert("Selected value: " + input.value);
+  //alert("Selected value: " + input.value);
 }
 
   function handleDropdownChange() {

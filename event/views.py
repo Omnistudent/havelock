@@ -17,15 +17,15 @@ import math
 
 def grid(request):
 
-    grid_size_x = 10
-    grid_size_y = 10
+    grid_size_x = 11
+    grid_size_y = 11
     square_size = 30
     
     user=request.user
 
-    myrange=range(0,10)
-    myrange_x=range(0,10)
-    myrange_y=range(0,10)
+    myrange=range(0,11)
+    myrange_x=range(0,11)
+    myrange_y=range(0,11)
     
     if request.method == 'POST':
         
@@ -46,26 +46,55 @@ def grid(request):
             print(y)
             print(user.userprofile.question.answer1_swedish)
             right_answer=user.userprofile.question.answer1_swedish
+            ############################
+            # Correct answer
+            ############################
             if right_answer == y:
-                print('yes')
                 startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
                 startsquare.occupants3.remove(user.userprofile)
                 startsquare.save()
 
                 endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
-                endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
+                #endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
                 endsquare.occupants3.add(user.userprofile)
                 endsquare.save()
                 
+                movedy,movedx=getmovedir(user.userprofile.xpos,user.userprofile.ypos,user.userprofile.pending_xpos,user.userprofile.pending_ypos)
+                print("movedx")
+                print(movedx)
 
+                
                 user.userprofile.xpos=user.userprofile.pending_xpos
                 user.userprofile.ypos=user.userprofile.pending_ypos
                 user.userprofile.pending_xpos=4
                 user.userprofile.pending_ypos=4
                 user.userprofile.save()
-#
 
-                print(endsquare.occupants3.all())
+                
+                #seems to react on movey
+                if movedx==1:
+                    temp=user.userprofile.x
+                    user.userprofile.x=temp+1
+                    user.userprofile.save()
+
+
+                if movedx==-1:
+                    temp=user.userprofile.x
+                    user.userprofile.x=temp-1
+                    user.userprofile.save()
+
+                if movedy==-1:
+                    temp=user.userprofile.y
+                    user.userprofile.y=temp-1
+                    user.userprofile.save()
+
+                if movedy==1:
+                    temp=user.userprofile.y
+                    user.userprofile.y=temp+1
+                    user.userprofile.save()
+
+
+
 
                 myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
                 myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
@@ -374,3 +403,8 @@ def home(request,year=datetime.now().year,month="March"):
         "month_number":month_number,
         "cal":cal,
     })
+
+def getmovedir(xstart,ystart,xend,yend):
+    dx=int(int(xend)-int(xstart))
+    dy=int(yend-ystart)
+    return (dx,dy)
