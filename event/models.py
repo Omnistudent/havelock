@@ -80,6 +80,8 @@ class UserProfile(models.Model):
 	#mapsquare = models.ForeignKey(Mapsquare,on_delete=models.DO_NOTHING)
 	mode = models.CharField('mode',max_length=30,blank=True)
 	question=models.ForeignKey(Question, blank=True,null=True,on_delete=models.CASCADE)
+	correct_answers = models.IntegerField("correct_answers",default=0)
+	wrong_answers = models.IntegerField("wrong_answers",default=0)
 	def __str__(self):
 		return str(self.user)
 	

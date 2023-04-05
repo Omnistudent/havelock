@@ -39,7 +39,7 @@
         cursor: pointer;
       }
       .panel {
-        width: 200px;
+        width: 400px;
         height: 50%;
         position: fixed;
         top: 200px;
@@ -128,6 +128,8 @@
         position y: {{user.userprofile.ypos}}<br>
         pending position x: {{user.userprofile.pending_xpos}}<br>
         position y: {{user.userprofile.pending_ypos}}<br>
+        rätta svar:{{user.userprofile.correct_answers}}<br>
+        felaktiga svar:{{user.userprofile.wrong_answers}}<br>
       <br>
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
@@ -141,7 +143,7 @@
         {% csrf_token %}
         {{question.question_swedish}}
         <br>
-        {% if question.question_swedish != "Rätt!" %}
+        {% if question.area3 != "no_questions" %}
         {% for answer in answers %}
         
             
