@@ -38,8 +38,8 @@ def register_user(request):
 			user = authenticate(username=username, password=password)
 			login(request, user)		
 			messages.success(request, ("Registration Successful!"))
-			user_profile = UserProfile.objects.create(user=user, name=username,x='0',y='0',xpos=4,ypos=4,mode='move')
-			currentsquare=Square.objects.get(x=4, y=4)
+			user_profile = UserProfile.objects.create(user=user, name=username,x='0',y='0',xpos=5,ypos=5,mode='move')
+			currentsquare=Square.objects.get(x=5, y=5)
 			currentsquare.occupants3.add(user.userprofile)
 			currentsquare.save()
 	
