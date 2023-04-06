@@ -571,7 +571,8 @@ def home(request):
                     #################
                     # Question made
                     #################
-                question = Question.objects.filter(difficulty__lte=1).order_by('?').first()
+                #question = Question.objects.filter(difficulty__lte=1).order_by('?').first()
+                question = Question.objects.exclude(area1='utility').filter(difficulty__lte=1).order_by('?').first()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 shuffle(answers)  # shuffles the answers randomly
                 user.userprofile.question=question
