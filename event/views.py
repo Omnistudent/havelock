@@ -345,10 +345,10 @@ def moveallowed(startx,endx,starty,endy):
     pdist=math.dist(p1,p2)
     
     if pdist<1.5:
+        endsquare = Square.objects.get(x=endx, y=endy)
+        if endsquare.image=='land.png':
+            return False
         return True
-    #endsquare = Square.objects.get(x=x, y=y)
-    #if endsquare.image=='land.png':
-    #    return False
     return False
 
 def grid2(request):
