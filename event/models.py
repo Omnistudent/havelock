@@ -69,8 +69,11 @@ class MyPlayer(models.Model):
 		return self.name
 	
 class UserProfile(models.Model):
+
+	last_active_time = models.DateTimeField(null=True, blank=True)
 	name=models.CharField('User Name',max_length=120,default='0')
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	user_type=models.CharField('user_type',max_length=120,default='regular')
 	x = models.IntegerField("x",default=0)
 	y = models.IntegerField("y",default=0)
 	xpos = models.IntegerField("xpos",default=0)

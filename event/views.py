@@ -13,7 +13,12 @@ from random import shuffle
 from django.http import HttpResponse
 from django.http import JsonResponse
 #import json
-import math 
+import math
+from django.contrib.auth import authenticate, login
+import string
+from django.contrib.auth.models import AnonymousUser
+from django.utils import timezone
+from datetime import timedelta
 
 def grid(request):
 
@@ -284,23 +289,7 @@ def grid(request):
         myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
         myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
         squares=get_squares(myrange_x,myrange_y)
-        #for square in Square.objects.all():
-        #    square.image = square.image.replace('image.png', 'sea.png')
-        #    square.save()
-
-
-        #dbsquares = Square.objects.filter(image="event/image.png")
-        #try:
-        #    dbsquare = Square.objects.get(x='4', y='4')
-        #    dbsquare.occupants3.add(user.userprofile)
-        #    dbsquare.save()
-        #    print(dbsquare.occupants3)
-        #except:
-        #    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-        #dbsquare.occupants3.add(user.userprofile)
-        
-        #dbsquares = Square.objects.all()
-        #dbsquares = Square.objects.all()
+       
         startx = int(user.userprofile.x)
         stopx = int(user.userprofile.x)+grid_size_x
         starty = int(user.userprofile.y)
@@ -397,29 +386,78 @@ def all_events(request):
         {'event_list':event_list})
 
 
-def home(request,year=datetime.now().year,month="March"):
-    name="Theo"
-    month=month.title()
-    month_number=list(calendar.month_name).index(month)
-    month_number=int(month_number)
+def home(request):
+        
 
-    cal=HTMLCalendar().formatmonth(
-        year,
-        month_number)
 
-    #now=datetime.now()
-    #current_year=now.year
+        
+    if not request.user.is_authenticated:
 
-    return render(request,
-    'event/home.html',{
-        "name":name,
-        "year":year,
-        "month":month,
-        "month_number":month_number,
-        "cal":cal,
-    })
+
+            #user = AnonymousUser()
+            #question = Question.objects.filter(name='Correct_1').order_by('?').first()
+            #user_profile =UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question)
+            #user.userprofile=user_profile
+            #user.userprofile.save()
+        #if True:
+            # Generate a random username and password
+        username10 = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+        password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+
+        # Create a new user with the generated username and password
+        user = User.objects.create_user(username=username10, password=password)
+        question = Question.objects.filter(name='Correct_1').order_by('?').first()
+        user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question,user_type='temp')
+        user.userprofile=user_profile
+
+        # Authenticate and log in the user
+        user = authenticate(request, username=username10, password=password)
+        login(request, user)
+
+
+    grid_size_x = 11
+    grid_size_y = 11
+    square_size = 30
+    user_profile = request.user.userprofile
+    user_profile.last_active_time = timezone.now()
+    user_profile.save()
+    
+    
+
+    myrange=range(0,11)
+    myrange_x=range(0,11)
+    myrange_y=range(0,11)
+    user = request.user
+    myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+    myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
+    squares=get_squares(myrange_x,myrange_y)
+       
+    startx = int(user.userprofile.x)
+    stopx = int(user.userprofile.x)+grid_size_x
+    starty = int(user.userprofile.y)
+    stopy = int(user.userprofile.y)+grid_size_y
+
+    charsx = [str(i) for i in range(startx-3, stopx+2)]
+    charsy = [str(i) for i in range(starty-3, stopy+2)]
+    dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+    square_dict = {f"{int(square.y)}-{int(square.x)}": square for square in dbsquares}
+        
+        #for squared in dbsquares:
+        #    squared.occupants3.remove(user.userprofile)
+        #    squared.save()
+        
+        #for i in dbsquares:
+        #    print(i.occupants3.all())
+        #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+    question=user.userprofile.question
+    return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question})
 
 def getmovedir(xstart,ystart,xend,yend):
     dx=int(int(xend)-int(xstart))
     dy=int(yend-ystart)
     return (dx,dy)
+
+def delete_inactive_temp_users():
+    threshold = timezone.now() - timedelta(minutes=10)
+    inactive_users = User.objects.filter(userprofile__user_type='temp', userprofile__last_active_time__lt=threshold)
+    inactive_users.delete()

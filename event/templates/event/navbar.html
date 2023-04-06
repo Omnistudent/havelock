@@ -14,7 +14,7 @@
         
     
 
-      {% if user.is_authenticated %}
+        {% if user.is_authenticated and 'temp' not in user.userprofile.user_type %}
       {% if user.is_superuser %}
           <li class="nav-item">
           <a class="nav-link" href="{% url 'home' %}">Admin</a>
