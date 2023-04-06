@@ -65,8 +65,9 @@
   <body>
     
     
+    Karta <br>
     <div class="card" style="width: 20rem;">
-    <form id="click-form" method="post" action="/grid" >
+    <form id="click-form" method="post" action="" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
   
@@ -99,26 +100,7 @@
     {% endfor %}
   </div>
 
-    <br>
-    Ändra vy
     
-    <br>
-    <button onclick="updatePanel('nav','y+1')" class="btn btn-success btn-sm">Up</button>
-    <button onclick="updatePanel('nav','y-1')" class="btn btn-success btn-sm">Down</button>
-    <button onclick="updatePanel('nav','x-1')" class="btn btn-success btn-sm">Left</button>
-    <button onclick="updatePanel('nav','x+1')" class="btn btn-success btn-sm">Right</button>
-    </form>
-    <br>
-    Ändra mode
-    <form id="my-form" method="post" action="/grid">
-      {% csrf_token %}
-
-      <select name="dropdown" onchange="updatePanel('changemode',2,dropdown.options[dropdown.selectedIndex].value)">
-        <label for="dropdown">Select an option:</label>
-        <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>flytta</option>
-        <option value="paint sea" {% if user.userprofile.mode == 'paint sea' %} selected {% endif %}>paint sea</option>
-        <option value="paint land" {% if user.userprofile.mode == 'paint land' %} selected {% endif %}>paint land</option>
-    </select>
     
   </form>
 
@@ -142,6 +124,7 @@
     <div id="side-panel" class="button-container">
       <div class="button-container">
       <form method="post" id="question-form" >
+        fråga
         {% csrf_token %}
         {{question.question_swedish}}
         <br>
