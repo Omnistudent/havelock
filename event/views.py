@@ -208,14 +208,15 @@ def grid(request):
                 print(question)
                 
 
-                user.userprofile.pending_xpos=x
-                user.userprofile.pending_ypos=y
-                user.userprofile.question=question
-                user.userprofile.save()
+
                 ###############
                 # Qustions set
                 ###############
-                if moveallowed(x,y):
+                if moveallowed(user.userprofile.xpos,x,user.userprofile.ypos,y):
+                    user.userprofile.pending_xpos=x
+                    user.userprofile.pending_ypos=y
+                    user.userprofile.question=question
+                    user.userprofile.save()
 
                     myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
                     myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
@@ -241,25 +242,9 @@ def grid(request):
 
                     return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
 
-                    #p1=[user.userprofile.xpos,user.userprofile.ypos]
-                    #print("userpos is" +str(p1))
-                    #p2=[int(x),int(y)]
-                    #pdist=math.dist(p1,p2)
-                    #if pdist<1.5:
-                    #
-                    #                 
-                   #
-                    #    startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
-                     #   startsquare.occupants3.remove(user.userprofile)
-                      #  startsquare.save()
-#
- #                       user.userprofile.xpos=int(x)
-  #                      user.userprofile.ypos=int(y)
-   #                     user.userprofile.save()
-#
-#                       endsquare = Square.objects.get(x=x, y=y)
- #                       endsquare.occupants3.add(user.userprofile)
-  #                      endsquare.save()
+
+
+
 
             elif user.userprofile.mode=='paint sea':
                 try:
@@ -353,11 +338,18 @@ def get_squares(xrange,yrange):
    
     return squares
 
-def moveallowed(x,y):
+def moveallowed(startx,endx,starty,endy):
+    
+    p1=[int(startx),int(starty)]
+    p2=[int(endx),int(endy)]
+    pdist=math.dist(p1,p2)
+    
+    if pdist<1.5:
+        return True
     #endsquare = Square.objects.get(x=x, y=y)
     #if endsquare.image=='land.png':
     #    return False
-    return True
+    return False
 
 def grid2(request):
     # Retrieve all Square objects from the database
