@@ -108,6 +108,8 @@ def grid(request):
                 square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                 
                 question = Question.objects.filter(name='Correct_1').order_by('?').first()
+                user.userprofile.question=question
+                user.userprofile.save()
                 #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 shuffle(answers)  # shuffles the answers randomly
@@ -133,6 +135,8 @@ def grid(request):
                 dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
                 square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                 question = Question.objects.filter(name='Wrong_1').order_by('?').first()
+                user.userprofile.question=question
+                user.userprofile.save()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
 
@@ -232,7 +236,9 @@ def grid(request):
                     question = user.userprofile.question
                     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                     shuffle(answers)  # shuffles the answers randomly
-                    print(answers)
+                    user.userprofile.question=question
+                    user.userprofile.save()
+
                     return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question,'answers':answers})
 
                     #p1=[user.userprofile.xpos,user.userprofile.ypos]
@@ -326,7 +332,8 @@ def grid(request):
         
         #for i in dbsquares:
         #    print(i.occupants3.all())
-        question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+        #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
+        question=user.userprofile.question
         return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict,'question':question}) 
         #return render(request, 'event/grid.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'myrange':myrange,'dbsquares':dbsquares,'squares': squares, 'square_size': square_size,'dbdic':square_dict}) 
 

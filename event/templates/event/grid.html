@@ -64,7 +64,7 @@
     
     
     <div class="card" style="width: 20rem;">
-    <form id="click-form" method="post" action="/grid">
+    <form id="click-form" method="post" action="/grid" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
   
@@ -165,13 +165,15 @@
     <script>
 
 function updatePanel(row, col, dropdownValue) {
-  
+
+    var user = '{{ user.userprofile.question.area1 }}';
+    if (user == "utility"){
     var input = document.createElement('input');
     input.type = 'hidden';
     input.name = 'square';
     inputrow = row + '*' + col;
     input.value = inputrow;
-    //.replace(/ /g, '_');
+
    
     
     var dropdownInput = document.createElement('input');
@@ -185,6 +187,8 @@ function updatePanel(row, col, dropdownValue) {
     form.appendChild(input);
     form.appendChild(dropdownInput);
     form.submit();
+    }
+    
   }
 
   function receiveAnswer(row, col, dropdownValue) {
@@ -226,6 +230,8 @@ function updatePanel(row, col, dropdownValue) {
     form.appendChild(dropdownInput);
     form.submit();
 }
+
+
 
     </script>
   </body>
