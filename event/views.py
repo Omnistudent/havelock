@@ -309,13 +309,6 @@ def home(request):
     print('in home')
     if not request.user.is_authenticated:
 
-
-            #user = AnonymousUser()
-            #question = Question.objects.filter(name='Correct_1').order_by('?').first()
-            #user_profile =UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question)
-            #user.userprofile=user_profile
-            #user.userprofile.save()
-        #if True:
             # Generate a random username and password
         username10 = ''.join(random.choice(string.ascii_letters) for _ in range(10))
         password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
@@ -331,7 +324,6 @@ def home(request):
 
         # Set square to be occupied by user
         beginsquare = Square.objects.get(x=5, y=5)
-                #endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
         beginsquare.occupants3.add(user.userprofile)
         beginsquare.save()
         login(request, user)
@@ -340,7 +332,7 @@ def home(request):
         grid_size_x = 11
         grid_size_y = 11
         square_size = 30
-        grid_extend=4
+        grid_extend=5
     
         user=request.user
 
@@ -353,8 +345,8 @@ def home(request):
 
         # Get x y of square, or mode
         x, y = square_str.split('*')
-        print(x)
-        print(y)
+        print('y: '+ str(x))
+        print('x: '+ str(y))
 
         if x=='answer':
             print("answer")
@@ -421,8 +413,11 @@ def home(request):
 
                 charsx = [str(i) for i in range(startx-grid_extend, stopx+grid_extend)]
                 charsy = [str(i) for i in range(starty-grid_extend, stopy+grid_extend)]
-                #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-                dbsquares = Square.objects.all()
+                #charsx = [str(i) for i in myrange_x]
+                #charsy = [str(i) for i in myrange_y]
+
+                dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+                #dbsquares = Square.objects.all()
                 #square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                 
                 question = Question.objects.filter(name='Correct_1').order_by('?').first()
@@ -450,8 +445,8 @@ def home(request):
 
                 charsx = [str(i) for i in range(startx-grid_extend, stopx+grid_extend)]
                 charsy = [str(i) for i in range(starty-grid_extend, stopy+grid_extend)]
-                #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-                dbsquares = Square.objects.all()
+                dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+                #dbsquares = Square.objects.all()
                 #square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                 question = Question.objects.filter(name='Wrong_1').order_by('?').first()
                 user.userprofile.question=question
@@ -487,8 +482,8 @@ def home(request):
 
                 charsx = [str(i) for i in range(startx-grid_extend, stopx+grid_extend)]
                 charsy = [str(i) for i in range(starty-grid_extend, stopy+grid_extend)]
-                #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-                dbsquares = Square.objects.all()
+                dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+                #dbsquares = Square.objects.all()
                 #square_dict = {f"{square.x}*{square.y}": square for square in dbsquares}
                     #################
                     # Question made
@@ -509,7 +504,7 @@ def home(request):
     user_profile = request.user.userprofile
     user_profile.last_active_time = timezone.now()
     user_profile.save()
-    grid_extend=4
+    grid_extend=5
     
     
     myrange_x=range(0,grid_size_x)
@@ -526,18 +521,10 @@ def home(request):
 
     charsx = [str(i) for i in range(startx-grid_extend, stopx+grid_extend)]
     charsy = [str(i) for i in range(starty-grid_extend, stopy+grid_extend)]
-    #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-    dbsquares = Square.objects.all()
+    dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+    #dbsquares = Square.objects.all()
     #square_dict = {f"{int(square.y)}-{int(square.x)}": square for square in dbsquares}
 
-    
-        #    squared.occupants3.remove(user.userprofile)
-        #    squared.save()
-        
-        #for i in dbsquares:
-        #    print(i.occupants3.all())
-        #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
-    #question=user.userprofile.question
     question = user.userprofile.question
     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
     return render(request, 'event/home.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
