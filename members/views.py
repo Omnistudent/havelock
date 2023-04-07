@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterUserForm
 from event.models import UserProfile
 from event.models import Square
+from event.models import Question
 
 
 def login_user(request):
@@ -38,7 +39,11 @@ def register_user(request):
 			user = authenticate(username=username, password=password)
 			login(request, user)		
 			messages.success(request, ("Registration Successful!"))
-			user_profile = UserProfile.objects.create(user=user, name=username,x='0',y='0',xpos=5,ypos=5,mode='move')
+
+			question = Question.objects.filter(name='Correct_1').order_by('?').first()
+
+			user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question,user_type='regular',mode='move')
+			user.userprofile=user_profile
 			currentsquare=Square.objects.get(x=5, y=5)
 			currentsquare.occupants3.add(user.userprofile)
 			currentsquare.save()
