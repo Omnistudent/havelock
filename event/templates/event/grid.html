@@ -63,7 +63,7 @@
   <body>
     
     Admin<br>
-    <div class="card" style="width: 20rem;">
+    <div class="card" style="width: 40rem;">
     <form id="click-form" method="post" action="/grid" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
@@ -116,6 +116,8 @@
         <option value="move" {% if user.userprofile.mode == 'move' %} selected {% endif %}>flytta</option>
         <option value="paint sea" {% if user.userprofile.mode == 'paint sea' %} selected {% endif %}>paint sea</option>
         <option value="paint land" {% if user.userprofile.mode == 'paint land' %} selected {% endif %}>paint land</option>
+        <option value="delete" {% if user.userprofile.mode == 'delete' %} selected {% endif %}>delete</option>
+        
     </select>
     
   </form>
@@ -168,6 +170,9 @@
 function updatePanel(row, col, dropdownValue) {
 
     var user = '{{ user.userprofile.question.area1 }}';
+
+    
+
     if (user == "utility"){
     var input = document.createElement('input');
     input.type = 'hidden';

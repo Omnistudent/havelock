@@ -64,22 +64,17 @@
   </head>
   <body>
     
-    
     Karta <br>
     <div class="card" style="width: 20rem;">
     <form id="click-form" method="post" action="" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
-  
-
       
       <div class="row">
         {% for col_num in myrange_x %}
           {% with index=row_num|add:'-'|add:col_num %}
+            <!-- Row is y, col is x-->
             <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
-              {% if index in dbdic %}
-              <small>x{{row_num}}-{{ col_num }}</small>
-              {%endif%}
               {% for square2 in dbsquares %}
                 {% if square2.x == row_num|stringformat:"s" and square2.y == col_num|stringformat:"s" %}                  
                   <div class="square" id="square-{{ row_num }}-{{ col_num }}" onclick="updatePanel({{ row_num }}, {{ col_num }})">
@@ -124,7 +119,6 @@
     <div id="side-panel" class="button-container">
       <div class="button-container">
       <form method="post" id="question-form" >
-        fråga
         {% csrf_token %}
         {{question.question_swedish}}
         <br>
