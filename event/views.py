@@ -280,13 +280,68 @@ def all_events(request):
         {'event_list':event_list})
 
 def help(request):
-    event_list=Event.objects.all()
-    return render(request,'event/help.html',
-        {'event_list':event_list})
+    if not request.user.is_authenticated:
+
+            # Generate a random username and password
+        username10 = ''.join(random.choice(string.ascii_letters) for _ in range(10))
+        password = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))
+
+        # Create a new user with the generated username and password
+        user = User.objects.create_user(username=username10, password=password)
+        question = Question.objects.filter(name='Correct_1').order_by('?').first()
+        user_profile = UserProfile.objects.create(user=user,name=user,x='0',y='0',xpos=5,ypos=5,pending_xpos=0,pending_ypos=0,correct_answers=0,wrong_answers=0,question=question,user_type='temp',mode='move')
+        user.userprofile=user_profile
+
+        # Authenticate and log in the user
+        user = authenticate(request, username=username10, password=password)
+
+        # Set square to be occupied by user
+        beginsquare = Square.objects.get(x=5, y=5)
+        beginsquare.occupants3.add(user.userprofile)
+        beginsquare.save()
+        login(request, user)
+
+    user=request.user
+    grid_size_x = 11
+    grid_size_y = 11
+
+    myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+    myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
+
+    startx = int(user.userprofile.x)
+    stopx = int(user.userprofile.x)+grid_size_x
+    starty = int(user.userprofile.y)
+    stopy = int(user.userprofile.y)+grid_size_y
+
+    charsx = [str(i) for i in range(startx, stopx)]
+    charsy = [str(i) for i in range(starty, stopy)]
+
+    try:
+        question = user.userprofile.question
+    except:
+        question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
+
+    answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+
+    if request.method == 'POST':
+        sent_x = request.POST.get('sent_x')
+        sent_y = request.POST.get('sent_y')
+        sent_action = request.POST.get('sent_action')
+
+        print('sent x'+sent_x)
+        print('sent y'+sent_y)
+        print('sent action'+sent_action)
+
+
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y})
+    else: # if request method was not post
+
+        dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares})
 
 
 def home(request):
-    delete_inactive_temp_users()
+    #delete_inactive_temp_users()
     if not request.user.is_authenticated:
 
             # Generate a random username and password
