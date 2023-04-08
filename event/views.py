@@ -279,6 +279,11 @@ def all_events(request):
     return render(request,'event/event_list.html',
         {'event_list':event_list})
 
+def help(request):
+    event_list=Event.objects.all()
+    return render(request,'event/help.html',
+        {'event_list':event_list})
+
 
 def home(request):
     delete_inactive_temp_users()

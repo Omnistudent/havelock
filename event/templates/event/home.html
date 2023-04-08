@@ -21,6 +21,14 @@
         margin: 10px;
         font-size: 20px;
     }
+.x {
+  
+  
+  background-color: lightblue;
+  z-index: 1;
+
+
+}
 
 .transparent-image {
   position: relative;
@@ -40,6 +48,10 @@
         border: 1px solid black;
         cursor: pointer;
       }
+
+      .square:hover {
+        border: 1px solid blue;
+}
       .panel {
         width: 400px;
         height: 50%;
@@ -66,11 +78,12 @@
     
     Karta <br>
     <div class="card" style="width: 20rem;">
+
     <form id="click-form" method="post" action="" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
       
-      <div class="row">
+        <div class="row">
         {% for col_num in myrange_x %}
           {% with index=row_num|add:'-'|add:col_num %}
             <!-- Row is y, col is x-->
@@ -83,7 +96,13 @@
                     <img src="{{ STATIC_URL }}event/images/image_ship.png">
                   {% else %}
                     <!--<img src="{{square2.image}}">-->
+                    
+                    {% if row_num|stringformat:"s" == '4' and col_num|stringformat:"s" == '4' %}
+                    <div class="x">Vardagshavet</div>
+                    {% endif %}
                     <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
+
+                    
                   {% endif %}
                   </div>
                 {% endif %}
@@ -91,7 +110,7 @@
             </div>
           {% endwith %}      
         {% endfor %}
-      </div>  
+        </div>  
     {% endfor %}
   </div>
 

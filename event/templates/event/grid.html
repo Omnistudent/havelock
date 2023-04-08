@@ -61,9 +61,9 @@
     </style>
   </head>
   <body>
-    
-    Admin<br>
-    <div class="card" style="width: 40rem;">
+  
+    <div class="card" style="width: 42rem;">
+      Redigera<br>
     <form id="click-form" method="post" action="/grid" >
       {% csrf_token %}
       {% for row_num in myrange_y %}
@@ -85,7 +85,8 @@
                     <img src="{{ STATIC_URL }}event/images/image_ship.png">
                   {% else %}
                     <!--<img src="{{square2.image}}">-->
-                    <img src="{{ STATIC_URL }}event/images/{{ square2.image }}">
+                    <!--<img src="{{ STATIC_URL }}event/images/{{ square2.image }}">-->
+                    <img src="{{ STATIC_URL }}event/images/name_tag.png">
                   {% endif %}
                   </div>
                 {% endif %}

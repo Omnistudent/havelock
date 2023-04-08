@@ -1,16 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Omnistudent</a>
+    <a class="navbar-brand" href="{% url 'home' %}">Havelock</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         
-
-
-        
-    
 
         {% if user.is_authenticated and 'temp' not in user.userprofile.user_type %}
       {% if user.is_superuser %}
@@ -22,17 +18,20 @@
           <a class="nav-link" href="{% url 'logout' %}">Logga Ut</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'grid' %}">KARTA</a>
+          <a class="nav-link" href="{% url 'grid' %}">Redigera Karta</a>
         </li>
       {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'register_user' %}">Ny Inloggning</a>
+          <a class="nav-link" href="{% url 'register_user' %}">Registrering</a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link" href="{% url 'login' %}">Logga in</a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'help' %}">Hjälp</a>
+        </li>
 
       {% endif %}
 
