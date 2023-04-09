@@ -305,6 +305,7 @@ body{ margin: 0}
       <button onclick="changeTheMode('paint sea')" class="btn btn-success btn-sm">Måla Hav</button>
       <button onclick="changeTheMode('paint land')" class="btn btn-success btn-sm">Måla Land</button>
       <button onclick="changeTheMode('delete')" class="btn btn-success btn-sm">Radera</button>
+      <button onclick="changeTheMode('addlabel')" class="btn btn-success btn-sm">Etikett</button>
       </form>
       <br>
   </center>
@@ -395,7 +396,7 @@ function updatePage(x, y) {
 
   var input_action = document.createElement('input');
   input_action.type = 'hidden';
-  input_action.name = 'sent_action';
+  input_action.name = 'command';
   input_action.value = 'answer';
 
   var form = document.getElementById('mapform');

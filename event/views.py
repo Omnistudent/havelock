@@ -760,7 +760,7 @@ def editmap(request):
         sent_action = request.POST.get('command')
         sent_answer = request.POST.get('answer')
         
-        print(sent_action)
+        print("sent_action was:"+sent_action)
         if sent_action == 'move_view':
             sent_x = request.POST.get('sent_x')
             sent_y = request.POST.get('sent_y')
@@ -778,7 +778,6 @@ def editmap(request):
             sent_mode = request.POST.get('newmode')
             user.userprofile.mode=sent_mode
             user.userprofile.save()
-            print('moder')
             myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
             overlays=getLabels(user,dbsquares,30)
             return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
@@ -840,9 +839,16 @@ def editmap(request):
                 square.delete()
             except Square.DoesNotExist:
                 print('no square at there')
+        if user.userprofile.mode=="addlabel":
+            try:
+                square = Square.objects.get(x=sent_x, y=sent_y)
+            except Square.DoesNotExist:
+                print('no square at there')
+                    #testsquare2=Square.objects.filter(x='10',y='5').first()
+            square.map_label="Vardagens Hav"
+            square.save()
 
-
-               
+              
             
         # end of if paint sea
 
