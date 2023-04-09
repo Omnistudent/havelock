@@ -180,7 +180,7 @@ body{ margin: 0}
   .icon {
     width: 50px;
     height: 50px;
-    background-image: url("{{ STATIC_URL }}event/images/ship1.png");
+    background-image: url("{{ STATIC_URL }}event/images/ship3.png");
     background-repeat: no-repeat;
     background-position: center center;
     position: absolute;
@@ -227,7 +227,7 @@ body{ margin: 0}
   </head>
   <body>
     <div class="container">
-     <div class="header">Header</div>
+     <div class="header">Kapten: {{user.userprofile}}</div>
      
      <div class="content-large">
       <center>
@@ -302,19 +302,18 @@ body{ margin: 0}
 
      <!--Stats window-->
      <div class="content-small">
-      Kapten:{{user.userprofile}}
-      <br>
+     
         position x: {{user.userprofile.xpos}}<br>
         position y: {{user.userprofile.ypos}}<br>
         pending position x: {{user.userprofile.pending_xpos}}<br>
         position y: {{user.userprofile.pending_ypos}}<br>
-        rätta svar:{{user.userprofile.correct_answers}}<br>
-        felaktiga svar:{{user.userprofile.wrong_answers}}<br>
+
       <br>
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
      </div>
-     <div class="footer">Content foot</div>
+     <div class="footer">        rätta svar:{{user.userprofile.correct_answers}}    
+        felaktiga svar:{{user.userprofile.wrong_answers}}</div>
     </div>
 
 
