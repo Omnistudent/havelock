@@ -734,3 +734,132 @@ def getLabels(user,gottendata,squaresize):
         print(lab.map_label)
 
     return returnArray
+
+def editmap(request):
+    user=request.user
+    grid_size_x = 11
+    grid_size_y = 11
+
+    myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
+    myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
+
+    startx = int(user.userprofile.x)
+    stopx = int(user.userprofile.x)+grid_size_x
+    starty = int(user.userprofile.y)
+    stopy = int(user.userprofile.y)+grid_size_y
+
+    charsx = [str(i) for i in range(startx, stopx)]
+    charsy = [str(i) for i in range(starty, stopy)]
+
+    try:
+        question = user.userprofile.question
+    except:
+        question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
+
+    answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+
+    if request.method == 'POST':
+        sent_action = request.POST.get('command')
+        sent_answer = request.POST.get('answer')
+        
+        print(sent_action)
+        if sent_action == 'move_view':
+            sent_x = request.POST.get('sent_x')
+            sent_y = request.POST.get('sent_y')
+            temp=user.userprofile.x
+            user.userprofile.x=temp+int(sent_x)
+            temp=user.userprofile.y
+            user.userprofile.y=temp+int(sent_y)
+            user.userprofile.save()
+
+            myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+            overlays=getLabels(user,dbsquares,30)
+            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+        # end of command: move_view
+        if sent_action == 'change_mode':
+            sent_mode = request.POST.get('newmode')
+            user.userprofile.mode=sent_mode
+            user.userprofile.save()
+            print('moder')
+            myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+            overlays=getLabels(user,dbsquares,30)
+            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+
+
+
+           
+        
+
+        # command wasnt answer, so use wants to move
+
+        try:
+            sent_x = request.POST.get('sent_x')
+            print('sent x'+sent_x)
+        except:
+            print('could not get x')
+
+        try:
+            sent_y = request.POST.get('sent_y')
+        except:
+            print('could not get y')
+
+        # User wants to move, create a question
+        if user.userprofile.mode=="move":
+            if moveallowed(user.userprofile.xpos,sent_x,user.userprofile.ypos,sent_y):
+                question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
+                user.userprofile.pending_xpos=sent_x
+                user.userprofile.pending_ypos=sent_y
+                user.userprofile.question=question
+                user.userprofile.save()
+                #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+
+                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+
+
+
+                answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                shuffle(answers)  # shuffles the answers randomly
+                user.userprofile.question=question
+                user.userprofile.save()
+            # end of if moveallowed
+        # end of if mode move
+
+        # User wants to paint sea
+        if user.userprofile.mode=="paint sea":
+            try:
+                square = Square.objects.get(x=sent_x, y=sent_y)
+            except Square.DoesNotExist:
+                square = Square.objects.create(x=sent_x, y=sent_y, name='sea3', image='sea.png',)
+
+        if user.userprofile.mode=="paint land":
+            try:
+                square = Square.objects.get(x=sent_x, y=sent_y)
+            except Square.DoesNotExist:
+                square = Square.objects.create(x=sent_x, y=sent_y, name='land', image='land.png',)
+        if user.userprofile.mode=="delete":
+            try:
+                square = Square.objects.get(x=sent_x, y=sent_y)
+                square.delete()
+            except Square.DoesNotExist:
+                print('no square at there')
+
+
+               
+            
+        # end of if paint sea
+
+        # Send ranges,database,question and randomly ordered answers
+        myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+        overlays=getLabels(user,dbsquares,30)
+        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+    # end of if request was post
+
+
+    else: # if request method was not post
+
+        dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+
+        # Send ranges,database,question and randomly ordered answers
+        overlays=getLabels(user,dbsquares,30)
+        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+

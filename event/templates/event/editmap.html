@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HJälp</title>
+    <title>Redigera Karta</title>
     <style>
 body{ margin: 0}
 
@@ -232,7 +232,7 @@ body{ margin: 0}
      <div class="content-large">
       <center>
       <div class="gridcontainer">
-        <form id="mapform" method="post" action="/help">
+        <form id="mapform" method="post" action="/editmap">
           {% csrf_token %}
           {% for row_num_y in myrange_y %}
             {% for col_num_x in myrange_x %}
@@ -278,25 +278,35 @@ body{ margin: 0}
      <div class="content-question_answer">
       <center>
 
-      <div class="answercontainer">
-        {{question.question_swedish}}
-      </div>
+ 
       <br>
       <div class="button-container">
-        <form method="post" id="question-form" action="/help">
+        <form method="post" id="changeview-form" action="/editmap">
           {% csrf_token %}
  
+          Ändra vy
+    
           <br>
-          {% if question.area3 != "no_questions" %}
-          {% for answer in answers %}
-              <button class="btn btn-primary" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
-              {% if forloop.counter|divisibleby:2 %}
-                  <br>
-              {% endif %}
-          {% endfor %}
-          {% endif %}
-      </form>
+          <button onclick="navigate(0,1)" class="btn btn-success btn-sm">Vy Upp</button>
+          <button onclick="navigate(0,-1)" class="btn btn-success btn-sm">Vy Ner </button>
+          <button onclick="navigate(-1,0)" class="btn btn-success btn-sm">Vy Vänster</button>
+          <button onclick="navigate(1,0)" class="btn btn-success btn-sm">Vy Höger</button>
+          </form>
+          <br>
+          
     </div>
+    <form method="post" id="changemode-form" action="/editmap">
+      {% csrf_token %}
+
+      Ändra mode
+
+      <br>
+      <button onclick="changeTheMode('move')" class="btn btn-success btn-sm">Flytta</button>
+      <button onclick="changeTheMode('paint sea')" class="btn btn-success btn-sm">Måla Hav</button>
+      <button onclick="changeTheMode('paint land')" class="btn btn-success btn-sm">Måla Land</button>
+      <button onclick="changeTheMode('delete')" class="btn btn-success btn-sm">Radera</button>
+      </form>
+      <br>
   </center>
      </div>
 
@@ -320,10 +330,10 @@ body{ margin: 0}
 
 <script>
 
-  function updatePage(x, y) {
+  function navigate(x, y) {
 
     var user = '{{ user.userprofile.question.area1 }}';
-    if (user == "utility") {
+
 
       var input_x = document.createElement('input');
       input_x.type = 'hidden';
@@ -337,41 +347,68 @@ body{ margin: 0}
 
       var input_action = document.createElement('input');
       input_action.type = 'hidden';
-      input_action.name = 'sent_action';
-      input_action.value = 'answer';
+      input_action.name = 'command';
+      input_action.value = 'move_view';
 
-      var form = document.getElementById('mapform');
+      var form = document.getElementById('changeview-form');
       form.appendChild(input_x);
       form.appendChild(input_y);
       form.appendChild(input_action);
       form.submit();
-    }
+
 }
 
-function receiveAnswer(command, answer,unused) {
+function changeTheMode(newmode) {
 
   var command_input = document.createElement('input');
   command_input.type = 'hidden';
   command_input.name = 'command';
-  command_input.value = 'answer';
+  command_input.value = 'change_mode';
   
   var answer_input = document.createElement('input');
   answer_input.type = 'hidden';
-  answer_input.name = 'answer';
-  answer_input.value = answer;
+  answer_input.name = 'newmode';
+  answer_input.value = newmode;
   //alert("Selected value: " + dropdownValue);
   //console.log('Dropdown value:', document.getElementById('dropdown').value);
   
-  var form = document.getElementById('question-form');
+  var form = document.getElementById('changemode-form');
   form.appendChild(command_input);
   form.appendChild(answer_input);
   form.submit();
 }
 
+function updatePage(x, y) {
 
+
+
+
+  var input_x = document.createElement('input');
+  input_x.type = 'hidden';
+  input_x.name = 'sent_x';
+  input_x.value = x;
+
+  var input_y = document.createElement('input');
+  input_y.type = 'hidden';
+  input_y.name = 'sent_y';
+  input_y.value = y;
+
+  var input_action = document.createElement('input');
+  input_action.type = 'hidden';
+  input_action.name = 'sent_action';
+  input_action.value = 'answer';
+
+  var form = document.getElementById('mapform');
+  form.appendChild(input_x);
+  form.appendChild(input_y);
+  form.appendChild(input_action);
+  form.submit();
+}
 
 
   </script>
+
+  
 
 
 {%endblock%}
