@@ -385,7 +385,8 @@ def help(request):
                 # there shouldnt be any answers
 
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+                overlays=getLabels(dbsquares)
+                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
             # end of right answer
             else: #wrong answer
                 print('wrog')
@@ -397,7 +398,8 @@ def help(request):
                 user.userprofile.question=question
                 user.userprofile.save()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+                overlays=[['name_tag.png',100,100]]
+                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
             # end of wrong answer
         # end of command: answer
@@ -438,7 +440,8 @@ def help(request):
 
         # Send ranges,database,question and randomly ordered answers
         myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+        overlays=getLabels(dbsquares)
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
     # end of if request was post
 
 
@@ -447,7 +450,8 @@ def help(request):
         dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
 
         # Send ranges,database,question and randomly ordered answers
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+        overlays=getLabels(dbsquares)
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
 
 
@@ -706,3 +710,6 @@ def getDatabaseAndView(userx,usery,gridx,gridy):
     dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
 
     return (myrange_x,myrange_y,dbsquares)
+
+def getLabels(gottendata):
+    return [['name_tag.png',100,100],['name_tag.png',200,200]]

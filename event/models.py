@@ -123,6 +123,7 @@ class Square(models.Model):
 	original_image=models.CharField(max_length=100,default='null.png')
 	#image = models.CharField(max_length=100, default='null.png')
 	territory = models.TextField(blank=True)
+	map_label=models.CharField('map_label',max_length=120,blank=True)
 
 	def __str__(self):
 		return self.name

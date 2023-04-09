@@ -265,7 +265,10 @@ body{ margin: 0}
             <br>
           {% endfor %} <!--End of rowy in myrange_y-->
         </form>
-        <div class="overlay"></div>
+        {% for maptext in overlays %}
+        <div class="overlay" style="top: {{ maptext.1 }}px;"></div>
+        {% endfor %}
+        
       </div> <!--end of gridcontainer-->
     </center>
     </div> <!--End contentlarge-->
