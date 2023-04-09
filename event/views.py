@@ -19,6 +19,7 @@ import string
 from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Q
 
 def grid(request):
 
@@ -385,7 +386,7 @@ def help(request):
                 # there shouldnt be any answers
 
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-                overlays=getLabels(dbsquares)
+                overlays=getLabels(user,dbsquares,30)
                 return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
             # end of right answer
             else: #wrong answer
@@ -398,7 +399,7 @@ def help(request):
                 user.userprofile.question=question
                 user.userprofile.save()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-                overlays=[['name_tag.png',100,100]]
+                overlays=getLabels(user,dbsquares,30)
                 return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
             # end of wrong answer
@@ -440,7 +441,7 @@ def help(request):
 
         # Send ranges,database,question and randomly ordered answers
         myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
-        overlays=getLabels(dbsquares)
+        overlays=getLabels(user,dbsquares,30)
         return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
     # end of if request was post
 
@@ -450,7 +451,7 @@ def help(request):
         dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
 
         # Send ranges,database,question and randomly ordered answers
-        overlays=getLabels(dbsquares)
+        overlays=getLabels(user,dbsquares,30)
         return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
 
@@ -711,5 +712,25 @@ def getDatabaseAndView(userx,usery,gridx,gridy):
 
     return (myrange_x,myrange_y,dbsquares)
 
-def getLabels(gottendata):
-    return [['name_tag.png',100,100],['name_tag.png',200,200]]
+def getLabels(user,gottendata,squaresize):
+    #testsquare=Square.objects.filter(x='5',y='5').first()
+    #testsquare.map_label="Start"
+    #testsquare.save()
+
+    #testsquare2=Square.objects.filter(x='10',y='5').first()
+    #testsquare2.map_label="Vardagens Hav"
+    #testsquare2.save()
+
+
+    labeled_squares = gottendata.exclude(Q(map_label__isnull=True) | Q(map_label__exact='')).all()
+    returnArray=[]
+    for lab in labeled_squares:
+        xcoord=int(lab.x)-int(user.userprofile.x)
+        ycoord=int(lab.y)-int(user.userprofile.y)
+        xPixels=xcoord*squaresize
+        yPixels=ycoord*squaresize
+        print('xpixels:'+str(xPixels))
+        returnArray.append(['name_tag.png',yPixels,xPixels])
+        print(lab.map_label)
+
+    return returnArray
