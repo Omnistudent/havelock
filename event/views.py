@@ -324,20 +324,131 @@ def help(request):
     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
 
     if request.method == 'POST':
-        sent_x = request.POST.get('sent_x')
-        sent_y = request.POST.get('sent_y')
-        sent_action = request.POST.get('sent_action')
+        sent_action = request.POST.get('command')
+        sent_answer = request.POST.get('answer')
+        if sent_action == 'answer':
+            right_answer=user.userprofile.question.answer1_swedish
+            ############################
+            # Correct answer
+            ############################
+            if right_answer == sent_answer:
 
-        print('sent x'+sent_x)
-        print('sent y'+sent_y)
-        print('sent action'+sent_action)
+                # increment right answers
+                user.userprofile.correct_answers+=1
+
+                # delete from starting square
+                startsquare = Square.objects.get(y=str(user.userprofile.ypos),x=str(user.userprofile.xpos))
+                startsquare.occupants3.remove(user.userprofile)
+                startsquare.save()
+
+                # add userprofile to end square
+                endsquare = Square.objects.get(x=user.userprofile.pending_xpos, y=user.userprofile.pending_ypos)
+                endsquare.occupants3.add(user.userprofile)
+                endsquare.save()
+                
+                # get moved direction
+                movedx,movedy=getmovedir(user.userprofile.xpos,user.userprofile.ypos,user.userprofile.pending_xpos,user.userprofile.pending_ypos)
+
+                # set new userprofile coordinates
+                user.userprofile.xpos=user.userprofile.pending_xpos
+                user.userprofile.ypos=user.userprofile.pending_ypos
+                user.userprofile.pending_xpos=0
+                user.userprofile.pending_ypos=0
+                user.userprofile.save()
+
+                # adjust view
+                #x seems to react on move y
+                if movedx==1:
+                    temp=user.userprofile.x
+                    user.userprofile.x=temp+1
+                    user.userprofile.save()
+                   
+                if movedx==-1:
+                    temp=user.userprofile.x
+                    user.userprofile.x=temp-1
+                    user.userprofile.save()
+                if movedy==-1:
+                    temp=user.userprofile.y
+                    user.userprofile.y=temp-1
+                    user.userprofile.save()
+                if movedy==1:
+                    temp=user.userprofile.y
+                    user.userprofile.y=temp+1
+                    user.userprofile.save()
+
+                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+                
+                #set question to correct
+                question = Question.objects.filter(name='Correct_1').order_by('?').first()
+                user.userprofile.question=question
+                user.userprofile.save()
+                # there shouldnt be any answers
+
+                answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+            # end of right answer
+            else: #wrong answer
+                print('wrog')
+                user.userprofile.wrong_answers+=1
+                user.userprofile.save()
+                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+
+                question = Question.objects.filter(name='Wrong_1').order_by('?').first()
+                user.userprofile.question=question
+                user.userprofile.save()
+                answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+
+            # end of wrong answer
+        # end of command: answer
+
+        # command wasnt answer, so use wants to move
+
+        try:
+            sent_x = request.POST.get('sent_x')
+            print('sent x'+sent_x)
+        except:
+            print('could not get x')
+
+        try:
+            sent_y = request.POST.get('sent_y')
+        except:
+            print('could not get y')
+
+        # User wants to move, create a question
+        if user.userprofile.mode=="move":
+            if moveallowed(user.userprofile.xpos,sent_x,user.userprofile.ypos,sent_y):
+                question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
+                user.userprofile.pending_xpos=sent_x
+                user.userprofile.pending_ypos=sent_y
+                user.userprofile.question=question
+                user.userprofile.save()
+                #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+
+                myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
 
 
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y})
+
+                answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
+                shuffle(answers)  # shuffles the answers randomly
+                user.userprofile.question=question
+                user.userprofile.save()
+            # end of if moveallowed
+        # end of if mode move
+
+        # Send ranges,database,question and randomly ordered answers
+        myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+    # end of if request was post
+
+
     else: # if request method was not post
 
         dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares})
+
+        # Send ranges,database,question and randomly ordered answers
+        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers})
+
 
 
 def home(request):
@@ -580,3 +691,18 @@ def delete_inactive_temp_users():
     threshold = timezone.now() - timedelta(minutes=10)
     inactive_users = User.objects.filter(userprofile__user_type='temp', userprofile__last_active_time__lt=threshold)
     inactive_users.delete()
+
+def getDatabaseAndView(userx,usery,gridx,gridy):
+    myrange_x=range(userx,int(userx)+gridx)
+    myrange_y=range(usery,int(usery)+gridy)
+
+    startx = int(userx)
+    stopx = int(userx)+gridx
+    starty = int(usery)
+    stopy = int(usery)+gridy
+
+    charsx = [str(i) for i in range(startx, stopx)]
+    charsy = [str(i) for i in range(starty, stopy)]
+    dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
+
+    return (myrange_x,myrange_y,dbsquares)

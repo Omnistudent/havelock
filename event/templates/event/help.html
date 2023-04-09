@@ -11,7 +11,34 @@
     <style>
 body{ margin: 0}
 
+.button-container {
+        width: 500px;
+        height: 300px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        border: 1px solid #000000;
+        background-color: rgb(239, 236, 226);
+    }
 
+    .button-container button {
+      font-family: "IM Fell DW Pica","EB Garamond", serif;
+        width: 200px;
+        height: 70px;
+        margin: 10px;
+        font-size: 20px;
+        color: black;
+        background-color: rgb(240, 229, 198);
+        border: 1px solid #000000;
+        font-weight: bold;
+    }
+
+    .container button:hover {
+  background-color: rgb(241, 216, 151); /* set the background color to red when hovering over the button */
+  color: black;
+  border: 1px solid #000000;
+  cursor: pointer; /* change the cursor to a pointer when hovering over the button */
+}
 .container {
   width: 100vw;
   height: 100vh;
@@ -19,26 +46,38 @@ body{ margin: 0}
   font-weight: bold;
   font-size: 2; /* Set font-size to 0 to remove white space between elements */
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 50px 1fr 1fr 100px;
+  grid-template-columns:400px 600px 1fr;
+  grid-template-rows: 50px 600px 100px;
   gap: 10px;
   padding: 10px;
   box-sizing: border-box;
   position: relative;
   outline: none;
-
-
-
 }
 
 .container div {
   padding: 10px;
-  
   margin: 0px;
-
   z-index: 1;
+}
 
-
+.answercontainer {
+  font-size: 20px;
+  width: 400px;
+  height: 200px;
+  font-family: "IM Fell DW Pica","EB Garamond", serif;
+  font-weight: bold;
+  gap: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+  border: 1px solid #000000;
+  grid-template-columns:400px 600px 1fr;
+  grid-template-rows: 50px 600px 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(240, 229, 198);
 
 }
 
@@ -47,14 +86,20 @@ body{ margin: 0}
   grid-column-end: 4;
   outline: 2px;
   border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
 }
 
 .gridcontainer{
   font-size: 0;
-  max-width: 400px;
+  width: 380px;
+  height: 380px;
   position: relative;
   border: 1px solid #000000;
   padding: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(240, 229, 198);
   
 }
 
@@ -62,22 +107,41 @@ body{ margin: 0}
   grid-row-start: 2;
   grid-row-end: span 2;
   grid-column-start: 1;
+  height: 600px;
 
-  outline: 2px;
+  outline: 1px;
   border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
 }
 
 .content-small {
+  max-width: 500px;
+  height: 600px;
+  font-family: "IM Fell DW Pica","EB Garamond", serif;
   border: 1px solid #000000;
   padding: 10px;
   margin: 0px;
   z-index: 1;
+  background-color: rgb(240, 229, 198);
+}
+
+.content-question_answer {
+  width: 600px;
+  height: 600px;
+  font-family: "IM Fell DW Pica","EB Garamond", serif;
+  border: 1px solid #000000;
+  padding: 10px;
+  margin: 0px;
+  z-index: 1;
+  background-color: rgb(237, 215, 156);
 }
 
 .footer {
   grid-column-start: 1;
   grid-column-end: span 3;
+  grid-row-start: 3;
   border: 1px solid #000000;
+  background-color: rgb(240, 229, 198);
 }
 
 .square {
@@ -114,9 +178,9 @@ body{ margin: 0}
   }
 
   .icon {
-    width: 30px;
-    height: 30px;
-    background-image: url("{{ STATIC_URL }}event/images/name_tag.png");
+    width: 50px;
+    height: 50px;
+    background-image: url("{{ STATIC_URL }}event/images/ship1.png");
     background-repeat: no-repeat;
     background-position: center center;
     position: absolute;
@@ -146,7 +210,7 @@ body{ margin: 0}
 }
 
 .ship:hover {
-  border: 2px solid blue;
+  border: 2px solid rgb(2, 2, 2);
 }
 
 .land:hover {
@@ -156,7 +220,9 @@ body{ margin: 0}
 .hover-effect:hover {
   opacity: 0.5;
   /* Add any other styles you want to apply to the image when it's being hovered over */
+  /* used for single pictures, pictures are now css objects*/
 }
+
 </style>
   </head>
   <body>
@@ -164,6 +230,7 @@ body{ margin: 0}
      <div class="header">Header</div>
      
      <div class="content-large">
+      <center>
       <div class="gridcontainer">
         <form id="mapform" method="post" action="/help">
           {% csrf_token %}
@@ -176,71 +243,127 @@ body{ margin: 0}
                 <!--</div>-->
                 {% for dbsquare in squaredb %}
                 {% if dbsquare.x|stringformat:"s" == col_num_x|stringformat:"s" and dbsquare.y|stringformat:"s" == row_num_y|stringformat:"s" %}             
-                {% if dbsquare.name == "sea3" %}
+                {% if dbsquare.name == "sea3" %} <!-- If the square is sea-->
+                
                     <div class="ship">
-                      
+                      {% if user.userprofile in dbsquare.occupants3.all %}
+                      <div class="icon"></div>
+                      {% endif %} <!-- End of is user in square-->
+
                   <!--<div class="icon"></div>-->
                 </div>
-                {% else %}
+                {% else %} <!-- else the square is land-->
                 <div class="land">
                   <!--<div class="icon"></div>-->
                 </div>
-                {% endif %}
-                  {% endif %}
+                {% endif %} <!-- End of If the square is sea-->
+                  {% endif %} <!-- End of If the square correct-->
               
-              {% endfor %}
+              {% endfor %} <!-- End going through squaredb-->
               </div>
-            {% endfor %} <!--End of colx in 1234-->
+            {% endfor %} <!--End of colx in myrange_x-->
             <br>
-          {% endfor %} <!--End of rowy in 1234-->
+          {% endfor %} <!--End of rowy in myrange_y-->
         </form>
         <div class="overlay"></div>
       </div> <!--end of gridcontainer-->
+    </center>
     </div> <!--End contentlarge-->
     
-     <div class="content-small">Content 2a</div>
-     <div class="content-small">Content 2b</div>
+
+    <!--Questions window-->
+     <div class="content-question_answer">
+      <center>
+
+      <div class="answercontainer">
+        {{question.question_swedish}}
+      </div>
+      <br>
+      <div class="button-container">
+        <form method="post" id="question-form" action="/help">
+          {% csrf_token %}
+ 
+          <br>
+          {% if question.area3 != "no_questions" %}
+          {% for answer in answers %}
+              <button class="btn btn-primary" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
+              {% if forloop.counter|divisibleby:2 %}
+                  <br>
+              {% endif %}
+          {% endfor %}
+          {% endif %}
+      </form>
+    </div>
+  </center>
+     </div>
+
+     <!--Stats window-->
+     <div class="content-small">
+      Kapten:{{user.userprofile}}
+      <br>
+        position x: {{user.userprofile.xpos}}<br>
+        position y: {{user.userprofile.ypos}}<br>
+        pending position x: {{user.userprofile.pending_xpos}}<br>
+        position y: {{user.userprofile.pending_ypos}}<br>
+        rätta svar:{{user.userprofile.correct_answers}}<br>
+        felaktiga svar:{{user.userprofile.wrong_answers}}<br>
+      <br>
+      view<br>
+      x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
+     </div>
      <div class="footer">Content foot</div>
     </div>
 
-
-
-<center>
-<h1>Hjälp</h1>
-<br>
-
-Inte mycket hjälp än!
 
 <script>
 
   function updatePage(x, y) {
 
-    var input_x = document.createElement('input');
-    input_x.type = 'hidden';
-    input_x.name = 'sent_x';
-    input_x.value = x;
+    var user = '{{ user.userprofile.question.area1 }}';
+    if (user == "utility") {
 
-    var input_y = document.createElement('input');
-    input_y.type = 'hidden';
-    input_y.name = 'sent_y';
-    input_y.value = y;
+      var input_x = document.createElement('input');
+      input_x.type = 'hidden';
+      input_x.name = 'sent_x';
+      input_x.value = x;
 
-    var input_action = document.createElement('input');
-    input_action.type = 'hidden';
-    input_action.name = 'sent_action';
-    input_action.value = 'answer';
+      var input_y = document.createElement('input');
+      input_y.type = 'hidden';
+      input_y.name = 'sent_y';
+      input_y.value = y;
 
+      var input_action = document.createElement('input');
+      input_action.type = 'hidden';
+      input_action.name = 'sent_action';
+      input_action.value = 'answer';
 
-    
-    var form = document.getElementById('mapform');
-    form.appendChild(input_x);
-    form.appendChild(input_y);
-    form.appendChild(input_action);
-    form.submit();
-
- 
+      var form = document.getElementById('mapform');
+      form.appendChild(input_x);
+      form.appendChild(input_y);
+      form.appendChild(input_action);
+      form.submit();
+    }
 }
 
+function receiveAnswer(command, answer,unused) {
+
+  var command_input = document.createElement('input');
+  command_input.type = 'hidden';
+  command_input.name = 'command';
+  command_input.value = 'answer';
+  
+  var answer_input = document.createElement('input');
+  answer_input.type = 'hidden';
+  answer_input.name = 'answer';
+  answer_input.value = answer;
+  //alert("Selected value: " + dropdownValue);
+  //console.log('Dropdown value:', document.getElementById('dropdown').value);
+  
+  var form = document.getElementById('question-form');
+  form.appendChild(command_input);
+  form.appendChild(answer_input);
+  form.submit();
+}
 
 
 
