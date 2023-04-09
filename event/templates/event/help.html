@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HJälp</title>
+    <title>Karta</title>
     <style>
 body{ margin: 0}
 
@@ -232,7 +232,7 @@ body{ margin: 0}
      <div class="content-large">
       <center>
       <div class="gridcontainer">
-        <form id="mapform" method="post" action="/help">
+        <form id="mapform" method="post" action="">
           {% csrf_token %}
           {% for row_num_y in myrange_y %}
             {% for col_num_x in myrange_x %}
@@ -283,7 +283,7 @@ body{ margin: 0}
       </div>
       <br>
       <div class="button-container">
-        <form method="post" id="question-form" action="/help">
+        <form method="post" id="question-form" action="">
           {% csrf_token %}
  
           <br>

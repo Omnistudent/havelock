@@ -265,14 +265,7 @@ def navigate(request):
 
 
 
-def click(request):
-    if request.method == 'POST':
-        x = '2'
-        y = '2'
-        Square.objects.create(x=x, y=y)
-        return JsonResponse({'status': 'ok'})
-    else:
-        return JsonResponse({'status': 'error'})
+
      
 
 def all_events(request):
@@ -281,6 +274,11 @@ def all_events(request):
         {'event_list':event_list})
 
 def help(request):
+    event_list=Event.objects.all()
+    return render(request,'event/event_list.html',
+        {'event_list':event_list})
+
+def home(request):
     if not request.user.is_authenticated:
 
             # Generate a random username and password
@@ -387,7 +385,7 @@ def help(request):
 
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
             # end of right answer
             else: #wrong answer
                 print('wrog')
@@ -400,7 +398,7 @@ def help(request):
                 user.userprofile.save()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 overlays=getLabels(user,dbsquares,30)
-                return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+                return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
             # end of wrong answer
         # end of command: answer
@@ -442,7 +440,7 @@ def help(request):
         # Send ranges,database,question and randomly ordered answers
         myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
         overlays=getLabels(user,dbsquares,30)
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+        return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
     # end of if request was post
 
 
@@ -452,11 +450,11 @@ def help(request):
 
         # Send ranges,database,question and randomly ordered answers
         overlays=getLabels(user,dbsquares,30)
-        return render(request,'event/help.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+        return render(request,'event/home.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
 
 
-def home(request):
+def home2(request):
     #delete_inactive_temp_users()
     if not request.user.is_authenticated:
 
@@ -577,7 +575,7 @@ def home(request):
                 #question = Question.objects.filter(difficulty__gte=0).order_by('?').first()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
                 shuffle(answers)  # shuffles the answers randomly
-                return render(request, 'event/home.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
+                return render(request, 'event/home2.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
 
 
             else:
@@ -604,7 +602,7 @@ def home(request):
                 user.userprofile.question=question
                 user.userprofile.save()
                 answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-                return render(request, 'event/home.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
+                return render(request, 'event/home2.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
 
         if user.userprofile.mode=="move":
             question = Question.objects.filter(difficulty__lte=2,area1='general').order_by('?').first()
@@ -646,7 +644,7 @@ def home(request):
                 user.userprofile.question=question
                 user.userprofile.save()
 
-                return render(request, 'event/home.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
+                return render(request, 'event/home2.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
 
 
     grid_size_x = 11
@@ -685,7 +683,7 @@ def home(request):
     except:
         question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
     answers = [question.answer1_swedish, question.answer2_swedish, question.answer3_swedish, question.answer4_swedish]
-    return render(request, 'event/home.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
+    return render(request, 'event/home2.html', {'myrange_x':myrange_x,'myrange_y':myrange_y,'dbsquares':dbsquares, 'square_size': square_size,'question':question,'answers':answers})
 
 def getmovedir(xstart,ystart,xend,yend):
     dx=int(int(xend)-int(xstart))
