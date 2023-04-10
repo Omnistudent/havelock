@@ -85,6 +85,8 @@ class UserProfile(models.Model):
 	question=models.ForeignKey(Question, blank=True,null=True,on_delete=models.CASCADE)
 	correct_answers = models.IntegerField("correct_answers",default=0)
 	wrong_answers = models.IntegerField("wrong_answers",default=0)
+	temp_label_holder=models.CharField('temp_label_holder',max_length=120,default='x')
+
 	def __str__(self):
 		return str(self.user)
 	

@@ -193,8 +193,8 @@ body{ margin: 0}
         position: absolute;
         top: 0px;
         left: 80px;
-        width: 100px;
-        height: 100px;
+        width: 200px;
+        height: 200px;
         background-image: url("{{ STATIC_URL }}event/images/name_tag.png");
         background-size: contain;
         background-repeat: no-repeat;
@@ -266,7 +266,8 @@ body{ margin: 0}
           {% endfor %} <!--End of rowy in myrange_y-->
         </form>
         {% for maptext in overlays %}
-        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>
+        <!--<div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>-->
+        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
         {% endfor %}
         
       </div> <!--end of gridcontainer-->
@@ -301,11 +302,20 @@ body{ margin: 0}
       Ändra mode
 
       <br>
-      <button onclick="changeTheMode('move')" class="btn btn-success btn-sm">Flytta</button>
-      <button onclick="changeTheMode('paint sea')" class="btn btn-success btn-sm">Måla Hav</button>
-      <button onclick="changeTheMode('paint land')" class="btn btn-success btn-sm">Måla Land</button>
-      <button onclick="changeTheMode('delete')" class="btn btn-success btn-sm">Radera</button>
-      <button onclick="changeTheMode('addlabel')" class="btn btn-success btn-sm">Etikett</button>
+      <button onclick="changeTheMode('move','')" class="btn btn-success btn-sm">Flytta</button>
+      <button onclick="changeTheMode('paint sea','')" class="btn btn-success btn-sm">Måla Hav</button>
+      <button onclick="changeTheMode('paint land','')" class="btn btn-success btn-sm">Måla Land</button>
+      <button onclick="changeTheMode('delete','')" class="btn btn-success btn-sm">Radera</button>
+      <br> 
+      <br>
+
+
+      <input type="text" name="label_text" id="label_text" maxlength="20" size="20" value="{{ user.userprofile.temp_label_holder }}">
+
+      <button onclick="changeTheMode('addlabel', document.getElementById('label_text').value)" class="btn btn-success btn-sm">Etikett</button>
+
+
+
       </form>
       <br>
   </center>
@@ -321,6 +331,8 @@ body{ margin: 0}
         position y: {{user.userprofile.pending_ypos}}<br>
         rätta svar:{{user.userprofile.correct_answers}}<br>
         felaktiga svar:{{user.userprofile.wrong_answers}}<br>
+        mode:{{user.userprofile.mode}}<br>
+        label:{{user.userprofile.temp_label_holder}}<br>
       <br>
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
@@ -359,7 +371,7 @@ body{ margin: 0}
 
 }
 
-function changeTheMode(newmode) {
+function changeTheMode(newmode,label_text) {
 
   var command_input = document.createElement('input');
   command_input.type = 'hidden';
@@ -370,6 +382,11 @@ function changeTheMode(newmode) {
   answer_input.type = 'hidden';
   answer_input.name = 'newmode';
   answer_input.value = newmode;
+
+  var label_input = document.createElement('input');
+  label_input.type = 'hidden';
+  label_input.name = 'label_text';
+  label_input.value = label_text;
   //alert("Selected value: " + dropdownValue);
   //console.log('Dropdown value:', document.getElementById('dropdown').value);
   
@@ -377,12 +394,10 @@ function changeTheMode(newmode) {
   form.appendChild(command_input);
   form.appendChild(answer_input);
   form.submit();
+  "label_text"
 }
 
 function updatePage(x, y) {
-
-
-
 
   var input_x = document.createElement('input');
   input_x.type = 'hidden';

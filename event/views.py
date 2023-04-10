@@ -20,6 +20,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
+from django.conf import settings
+import os
+from PIL import Image
+
+
 
 def grid(request):
 
@@ -711,6 +716,8 @@ def getDatabaseAndView(userx,usery,gridx,gridy):
     return (myrange_x,myrange_y,dbsquares)
 
 def getLabels(user,gottendata,squaresize):
+
+
     #testsquare=Square.objects.filter(x='5',y='5').first()
     #testsquare.map_label="Start"
     #testsquare.save()
@@ -722,13 +729,23 @@ def getLabels(user,gottendata,squaresize):
 
     labeled_squares = gottendata.exclude(Q(map_label__isnull=True) | Q(map_label__exact='')).all()
     returnArray=[]
+    static_images_path = os.path.join(settings.STATICFILES_DIRS[0], 'event/images')
+    print(static_images_path)
     for lab in labeled_squares:
+        image_location=os.path.join(static_images_path, lab.map_label)
+        try:
+            width, height = get_image_size(image_location)
+            print(f'The image size is {width}x{height} pixels.')
+        except:
+            print(image_location)
+            width=0
+            height=0
         xcoord=int(lab.x)-int(user.userprofile.x)
         ycoord=int(lab.y)-int(user.userprofile.y)
-        xPixels=xcoord*squaresize
-        yPixels=ycoord*squaresize
+        xPixels=(xcoord*squaresize)-squaresize*2
+        yPixels=ycoord*squaresize-squaresize*2
         print('xpixels:'+str(xPixels))
-        returnArray.append(['name_tag.png',yPixels,xPixels])
+        returnArray.append([lab.map_label,yPixels,xPixels])
         print(lab.map_label)
 
     return returnArray
@@ -776,10 +793,14 @@ def editmap(request):
         # end of command: move_view
         if sent_action == 'change_mode':
             sent_mode = request.POST.get('newmode')
+            label_text= request.POST.get('label_text')
             user.userprofile.mode=sent_mode
+            user.userprofile.temp_label_holder=label_text
             user.userprofile.save()
             myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
             overlays=getLabels(user,dbsquares,30)
+            label_text= request.POST.get('label_text')
+            print('heres the label text'+label_text)
             return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
 
@@ -845,7 +866,7 @@ def editmap(request):
             except Square.DoesNotExist:
                 print('no square at there')
                     #testsquare2=Square.objects.filter(x='10',y='5').first()
-            square.map_label="Vardagens Hav"
+            square.map_label=user.userprofile.temp_label_holder
             square.save()
 
               
@@ -867,3 +888,7 @@ def editmap(request):
         overlays=getLabels(user,dbsquares,30)
         return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
 
+def get_image_size(file_path):
+    with Image.open(file_path) as img:
+        width, height = img.size
+    return width, height
