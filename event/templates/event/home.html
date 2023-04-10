@@ -193,9 +193,9 @@ body{ margin: 0}
         position: absolute;
         top: 0px;
         left: 80px;
-        width: 100px;
-        height: 100px;
-        background-image: url("{{ STATIC_URL }}event/images/start4.png");
+        width: 200px;
+        height: 200px;
+        background-image: url("{{ STATIC_URL }}event/images/name_tag.png");
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -266,7 +266,8 @@ body{ margin: 0}
           {% endfor %} <!--End of rowy in myrange_y-->
         </form>
         {% for maptext in overlays %}
-        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>
+        <!--<div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>-->
+        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
         {% endfor %}
         
       </div> <!--end of gridcontainer-->

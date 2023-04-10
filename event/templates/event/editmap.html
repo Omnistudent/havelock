@@ -313,6 +313,11 @@ body{ margin: 0}
       <input type="text" name="label_text" id="label_text" maxlength="20" size="20" value="{{ user.userprofile.temp_label_holder }}">
 
       <button onclick="changeTheMode('addlabel', document.getElementById('label_text').value)" class="btn btn-success btn-sm">Etikett</button>
+      <br>
+      
+      <input type="text" name="question_text" id="question_text" maxlength="20" size="20" value="{{ user.userprofile.temp_question_holder }}">
+
+      <button onclick="changeTheMode('questionarea1', document.getElementById('question_text').value)" class="btn btn-success btn-sm">Frågeområde</button>
 
 
 
@@ -387,14 +392,23 @@ function changeTheMode(newmode,label_text) {
   label_input.type = 'hidden';
   label_input.name = 'label_text';
   label_input.value = label_text;
+
+  var question_input = document.createElement('input');
+  question_input.type = 'hidden';
+  question_input.name = 'question_text';
+  question_input.value = label_text;
+
+  //questionarea1
   //alert("Selected value: " + dropdownValue);
   //console.log('Dropdown value:', document.getElementById('dropdown').value);
   
   var form = document.getElementById('changemode-form');
   form.appendChild(command_input);
   form.appendChild(answer_input);
+  form.appendChild(label_input);
+  form.appendChild(question_input);
   form.submit();
-  "label_text"
+ 
 }
 
 function updatePage(x, y) {

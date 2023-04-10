@@ -86,6 +86,7 @@ class UserProfile(models.Model):
 	correct_answers = models.IntegerField("correct_answers",default=0)
 	wrong_answers = models.IntegerField("wrong_answers",default=0)
 	temp_label_holder=models.CharField('temp_label_holder',max_length=120,default='x')
+	temp_question_holder=models.CharField('temp_question_holder',max_length=120,default='x')
 
 	def __str__(self):
 		return str(self.user)
@@ -126,6 +127,9 @@ class Square(models.Model):
 	#image = models.CharField(max_length=100, default='null.png')
 	territory = models.TextField(blank=True)
 	map_label=models.CharField('map_label',max_length=120,blank=True)
+	question_area1=models.CharField('question1',max_length=120,blank=True)
+	
+
 
 	def __str__(self):
 		return self.name
