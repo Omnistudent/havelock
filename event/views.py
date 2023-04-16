@@ -22,7 +22,7 @@ from datetime import timedelta
 from django.db.models import Q
 from django.conf import settings
 import os
-from PIL import Image
+
 import csv
 from django.http import HttpResponse
 
