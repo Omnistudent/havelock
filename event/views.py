@@ -42,9 +42,8 @@ def moveallowed(startx,endx,starty,endy):
 
 
 def help(request):
-    event_list=Event.objects.all()
-    return render(request,'event/event_list.html',
-        {'event_list':event_list})
+    return render(request,'event/help.html',
+        {})
 
 def home(request):
     if not request.user.is_authenticated:

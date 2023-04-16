@@ -227,50 +227,16 @@ body{ margin: 0}
   </head>
   <body>
     <div class="container">
-     <div class="header">Header</div>
+     <div class="header">HJÄLP</div>
      
      <div class="content-large">
-      <center>
-      <div class="gridcontainer">
-        <form id="mapform" method="post" action="">
-          {% csrf_token %}
-          {% for row_num_y in myrange_y %}
-            {% for col_num_x in myrange_x %}
-              <div class="square" id="square-{{ col_num_x }}-{{ row_num_y }}" onclick="updatePage({{ col_num_x }}, {{ row_num_y }})">
-                <!--<img src="{{ STATIC_URL }}event/images/image_ship.png" class="hover-effect">-->
-                <!--<div class="ship">-->
-                  <!--<div class="icon"></div>-->
-                <!--</div>-->
-                {% for dbsquare in squaredb %}
-                {% if dbsquare.x|stringformat:"s" == col_num_x|stringformat:"s" and dbsquare.y|stringformat:"s" == row_num_y|stringformat:"s" %}             
-                {% if dbsquare.name == "sea3" %} <!-- If the square is sea-->
-                
-                    <div class="ship">
-                      {% if user.userprofile in dbsquare.occupants3.all %}
-                      <div class="icon"></div>
-                      {% endif %} <!-- End of is user in square-->
+      Instruktioner:<br>
+      <br>
+      Klicka med musen på den ruta du vill gå till.
+      <br>
+      <br>
+      Du kan bara gå till en ruta bredvid din båt.
 
-                  <!--<div class="icon"></div>-->
-                </div>
-                {% else %} <!-- else the square is land-->
-                <div class="land">
-                  <!--<div class="icon"></div>-->
-                </div>
-                {% endif %} <!-- End of If the square is sea-->
-                  {% endif %} <!-- End of If the square correct-->
-              
-              {% endfor %} <!-- End going through squaredb-->
-              </div>
-            {% endfor %} <!--End of colx in myrange_x-->
-            <br>
-          {% endfor %} <!--End of rowy in myrange_y-->
-        </form>
-        {% for maptext in overlays %}
-        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>
-        {% endfor %}
-        
-      </div> <!--end of gridcontainer-->
-    </center>
     </div> <!--End contentlarge-->
     
 
@@ -279,23 +245,11 @@ body{ margin: 0}
       <center>
 
       <div class="answercontainer">
-        {{question.question_swedish}}
+       För att få gå till en ruta måste du besvara en fråga
       </div>
       <br>
       <div class="button-container">
-        <form method="post" id="question-form" action="">
-          {% csrf_token %}
- 
-          <br>
-          {% if question.area3 != "no_questions" %}
-          {% for answer in answers %}
-              <button class="btn btn-primary" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
-              {% if forloop.counter|divisibleby:2 %}
-                  <br>
-              {% endif %}
-          {% endfor %}
-          {% endif %}
-      </form>
+       Frågorna dyker upp här.
     </div>
   </center>
      </div>
@@ -314,7 +268,7 @@ body{ margin: 0}
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
      </div>
-     <div class="footer">Content foot</div>
+     <div class="footer">SLUT PÅ HJÄLPEN</div>
     </div>
 
 
