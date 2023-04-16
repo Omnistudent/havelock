@@ -82,7 +82,7 @@ class UserProfile(models.Model):
 	pending_ypos = models.IntegerField("pending_ypos",default=0)
 	#mapsquare = models.ForeignKey(Mapsquare,on_delete=models.DO_NOTHING)
 	mode = models.CharField('mode',max_length=30,blank=True)
-	question=models.ForeignKey(Question, blank=True,null=True,on_delete=models.CASCADE)
+	question=models.ForeignKey(Question, blank=True,null=True,on_delete=models.SET_NULL)
 	correct_answers = models.IntegerField("correct_answers",default=0)
 	wrong_answers = models.IntegerField("wrong_answers",default=0)
 	temp_label_holder=models.CharField('temp_label_holder',max_length=120,default='x')

@@ -1,4 +1,5 @@
 {% extends 'event/base.html' %}
+{% load my_tags %}
 {% load static %}
 
 {%block content%}
@@ -12,7 +13,7 @@
 body{ margin: 0}
 
 .button-container {
-        width: 500px;
+        /*width: 250px;*/
         height: 300px;
         display: flex;
         flex-wrap: wrap;
@@ -23,7 +24,7 @@ body{ margin: 0}
 
     .button-container button {
       font-family: "IM Fell DW Pica","EB Garamond", serif;
-        width: 200px;
+        width: 100px;
         height: 70px;
         margin: 10px;
         font-size: 20px;
@@ -46,24 +47,25 @@ body{ margin: 0}
   font-weight: bold;
   font-size: 2; /* Set font-size to 0 to remove white space between elements */
   display: grid;
-  grid-template-columns:400px 600px 1fr;
-  grid-template-rows: 50px 600px 100px;
+  grid-template-columns:{{myrange_x|length|multiply:30|add:80 }}px 1fr;
+  grid-template-rows: 50px {{myrange_y|length|multiply:30|add:80 }}px 80px;
   gap: 10px;
   padding: 10px;
   box-sizing: border-box;
   position: relative;
   outline: none;
+  
 }
 
 .container div {
   padding: 10px;
-  margin: 0px;
+  margin: px;
   z-index: 1;
 }
 
 .answercontainer {
   font-size: 20px;
-  width: 400px;
+  /*width: 400px;*/
   height: 200px;
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   font-weight: bold;
@@ -72,8 +74,7 @@ body{ margin: 0}
   box-sizing: border-box;
   position: relative;
   border: 1px solid #000000;
-  grid-template-columns:400px 600px 1fr;
-  grid-template-rows: 50px 600px 100px;
+
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,6 +83,7 @@ body{ margin: 0}
 }
 
 .header {
+  
   grid-column-start: 1;
   grid-column-end: 4;
   outline: 2px;
@@ -91,8 +93,8 @@ body{ margin: 0}
 
 .gridcontainer{
   font-size: 0;
-  width: 380px;
-  height: 380px;
+  width: {{myrange_x|length|multiply:30|add:30 }}px; 
+  height: {{myrange_y|length|multiply:30|add:30 }}px;
   position: relative;
   border: 1px solid #000000;
   padding: 0px;
@@ -100,6 +102,7 @@ body{ margin: 0}
   align-items: center;
   justify-content: center;
   background-color: rgb(240, 229, 198);
+  align-items: center;
   
 }
 
@@ -107,16 +110,20 @@ body{ margin: 0}
   grid-row-start: 2;
   grid-row-end: span 2;
   grid-column-start: 1;
-  height: 600px;
+  height: {{myrange_y|length|multiply:30|add:50 }}px;
+  
+  width: {{myrange_x|length|multiply:30|add:50 }}px
 
   outline: 1px;
   border: 1px solid #000000;
+  
   background-color: rgb(240, 229, 198);
+  align-items: center;
 }
 
 .content-small {
-  max-width: 500px;
-  height: 600px;
+  /*max-width: 300px;*/
+  /*height: 600px;*/
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   border: 1px solid #000000;
   padding: 10px;
@@ -126,7 +133,7 @@ body{ margin: 0}
 }
 
 .content-question_answer {
-  width: 600px;
+  /*width: 300px;*/
   height: 600px;
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   border: 1px solid #000000;
@@ -142,7 +149,10 @@ body{ margin: 0}
   grid-row-start: 3;
   border: 1px solid #000000;
   background-color: rgb(240, 229, 198);
+
 }
+
+
 
 .square {
   width: 30px;
@@ -193,7 +203,9 @@ body{ margin: 0}
         position: absolute;
         top: 0px;
         left: 80px;
-        width: 200px;
+       /* width: {{myrange_x|length|multiply:30|add:100 }}px;
+        height: {{myrange_x|length|multiply:30|add:100 }}px;*/
+        width:200px;
         height: 200px;
         background-image: url("{{ STATIC_URL }}event/images/name_tag.png");
         background-size: contain;
@@ -241,9 +253,10 @@ body{ margin: 0}
                 <!--<div class="ship">-->
                   <!--<div class="icon"></div>-->
                 <!--</div>-->
-                {% for dbsquare in squaredb %}
-                {% if dbsquare.x|stringformat:"s" == col_num_x|stringformat:"s" and dbsquare.y|stringformat:"s" == row_num_y|stringformat:"s" %}             
-                {% if dbsquare.name == "sea3" %} <!-- If the square is sea-->
+                {% with square4=col_num_x|get_square:row_num_y  %}
+                {% if square4 %}
+                
+                  {% if square4.name == "sea3" %} <!-- If the square is sea-->
                 
                     <div class="ship">
                       {% if user.userprofile in dbsquare.occupants3.all %}
@@ -252,14 +265,16 @@ body{ margin: 0}
 
                   <!--<div class="icon"></div>-->
                 </div>
-                {% else %} <!-- else the square is land-->
-                <div class="land">
+                  {% else %}
+                  <div class="land">
                   <!--<div class="icon"></div>-->
-                </div>
-                {% endif %} <!-- End of If the square is sea-->
-                  {% endif %} <!-- End of If the square correct-->
-              
-              {% endfor %} <!-- End going through squaredb-->
+                  </div>
+                  {% endif %}
+               
+                {% endif %}
+                {%endwith%}
+                
+                <!--i cut the old code out from here -->
               </div>
             {% endfor %} <!--End of colx in myrange_x-->
             <br>
@@ -267,7 +282,7 @@ body{ margin: 0}
         </form>
         {% for maptext in overlays %}
         <!--<div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>-->
-        <div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
+        <div class="overlay" style="top: {{ maptext.1|add:0 }}px; left:{{ maptext.2|add:0 }}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
         {% endfor %}
         
       </div> <!--end of gridcontainer-->
@@ -288,8 +303,8 @@ body{ margin: 0}
           Ändra vy
     
           <br>
-          <button onclick="navigate(0,1)" class="btn btn-success btn-sm">Vy Upp</button>
-          <button onclick="navigate(0,-1)" class="btn btn-success btn-sm">Vy Ner </button>
+          <button onclick="navigate(0,1)" class="btn btn-success btn-sm">Vy Ner</button>
+          <button onclick="navigate(0,-1)" class="btn btn-success btn-sm">Vy Upp </button>
           <button onclick="navigate(-1,0)" class="btn btn-success btn-sm">Vy Vänster</button>
           <button onclick="navigate(1,0)" class="btn btn-success btn-sm">Vy Höger</button>
           </form>
@@ -322,11 +337,12 @@ body{ margin: 0}
 
 
       </form>
-      <br>
+     
   </center>
      </div>
+  
 
-     <!--Stats window-->
+     <!--Stats window
      <div class="content-small">
       Kapten:{{user.userprofile}}
       <br>
@@ -342,6 +358,8 @@ body{ margin: 0}
       view<br>
       x{{user.userprofile.x}} y{{user.userprofile.y}}<br>
      </div>
+
+     -->
      <div class="footer">Content foot</div>
     </div>
 

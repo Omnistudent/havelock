@@ -17,9 +17,7 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logga Ut</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'grid' %}">Redigera Karta</a>
-        </li>
+
         
         <li class="nav-item">
           <a class="nav-link" href="{% url 'help' %}">Hjälp</a>
@@ -29,6 +27,11 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'editmap' %}"> Ny Redigera Karta</a>
         </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'editmap' %}"> Storkarta</a>
+        </li>
+
       {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register_user' %}">Registrering</a>

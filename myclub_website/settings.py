@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'event',
     'members',
+    'my_tags',
 ]
 
 MIDDLEWARE = [
