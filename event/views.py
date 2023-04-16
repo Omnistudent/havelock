@@ -69,8 +69,8 @@ def home(request):
         login(request, user)
 
     user=request.user
-    grid_size_x = 11
-    grid_size_y = 11
+    grid_size_x = 15
+    grid_size_y = 15
 
     myrange_x=range(user.userprofile.x,int(user.userprofile.x)+grid_size_x)
     myrange_y=range(user.userprofile.y,int(user.userprofile.y)+grid_size_y)
