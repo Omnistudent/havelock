@@ -26,10 +26,10 @@ body{ margin: 0}
 
     .button-container button {
       font-family: "IM Fell DW Pica","EB Garamond", serif;
-        width: 230px;
-        height: 70px;
+        width: 150px;
+        height: 90px;
         margin: 10px;
-        font-size: 20px;
+        font-size: 15px;
         color: black;
         background-color: rgb(240, 229, 198);
         border: 1px solid #000000;
@@ -41,6 +41,11 @@ body{ margin: 0}
   color: black;
   border: 1px solid #000000;
   cursor: pointer; /* change the cursor to a pointer when hovering over the button */
+}
+
+.answer-button {
+  max-width: 200px; /* adjust as needed */
+  font-size: 15px; /* default font size */
 }
 .container {
   width: 100vw;
@@ -307,7 +312,7 @@ body{ margin: 0}
           <br>
           {% if question.area3 != "no_questions" %}
           {% for answer in answers %}
-              <button class="btn btn-primary" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
+              <button class="btn btn-primary answer-button" onclick="receiveAnswer('answer','{{ answer }}','1')" name="answer" value="{{ answer }}">{{ answer }}</button>
               {% if forloop.counter|divisibleby:2 %}
                   <br>
               {% endif %}
@@ -336,6 +341,16 @@ body{ margin: 0}
 
 
 <script>
+
+var buttons = document.querySelectorAll('.answer-button');
+
+buttons.forEach(function(button) {
+  var textLength = button.textContent.length;
+  if (textLength > 40) {
+    var fontSize = Math.floor(1000 / textLength); // adjust as needed
+    button.style.fontSize = fontSize + 'px';
+  }
+});
 
   function updatePage(x, y) {
 
