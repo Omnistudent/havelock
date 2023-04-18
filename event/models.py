@@ -104,7 +104,23 @@ class UserProfile2(models.Model):
 
 
 
+class Beacon(models.Model):
+	name=models.CharField('Square Name',max_length=120)
+	x=models.CharField('X',max_length=120)
+	y=models.CharField('Y',max_length=120)
+	z=models.CharField('Z',max_length=120)
+	description=models.TextField(blank=True)
+	occupants=models.ManyToManyField(MyPlayer,blank=True)
 
+	image = models.CharField(max_length=100,default='null.png')
+	territory = models.TextField(blank=True)
+	map_label=models.CharField('map_label',max_length=120,blank=True)
+	question_area1=models.CharField('questionarea1',max_length=120,blank=True)
+	question_area2=models.CharField('questionarea2',max_length=120,blank=True)
+	question_area3=models.CharField('questionarea3',max_length=120,blank=True)
+	question_area4=models.CharField('questionarea4',max_length=120,blank=True)
+	def __str__(self):
+		return self.name
 
 
 

@@ -1,22 +1,22 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-import calendar
-from calendar import HTMLCalendar
-from datetime import datetime
-from .models import Event
+#import calendar
+#from calendar import HTMLCalendar
+#from datetime import datetime
+#from .models import Event
 from .models import Square
-from .models import MyPlayer
+#from .models import MyPlayer
 from .models import UserProfile
 from .models import Question
 import random
 from random import shuffle
-from django.http import HttpResponse
-from django.http import JsonResponse
+#from django.http import HttpResponse
+#from django.http import JsonResponse
 #import json
 import math
 from django.contrib.auth import authenticate, login
 import string
-from django.contrib.auth.models import AnonymousUser
+#from django.contrib.auth.models import AnonymousUser
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
@@ -24,7 +24,7 @@ from django.conf import settings
 import os
 
 import csv
-from django.http import HttpResponse
+#from django.http import HttpResponse
 
 
 def moveallowed(startx,endx,starty,endy):
