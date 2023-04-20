@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 #from datetime import datetime
 #from .models import Event
 from .models import Square
+from .models import Beacon
 #from .models import MyPlayer
 from .models import UserProfile
 from .models import Question
@@ -14,6 +15,7 @@ from random import shuffle
 #from django.http import JsonResponse
 #import json
 import math
+from math import exp
 from django.contrib.auth import authenticate, login
 import string
 #from django.contrib.auth.models import AnonymousUser
@@ -35,7 +37,7 @@ def moveallowed(startx,endx,starty,endy):
     
     if pdist<1.5:
         endsquare = Square.objects.get(x=endx, y=endy)
-        if endsquare.image=='land.png':
+        if 'land' in endsquare.image:
             return False
         return True
     return False
@@ -196,12 +198,15 @@ def home(request):
                 
                 endsquare = Square.objects.get(y=str(user.userprofile.pending_ypos),x=str(user.userprofile.pending_xpos))
 
+                
+                #print(generated_question)
+
                 if endsquare.question_area1:
                     question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3, area3=endsquare.question_area1).order_by('?').first()
                 else:
                     question = Question.objects.exclude(area1='utility').filter(difficulty__lte=3).order_by('?').first()
 
-
+                question=get_question(endsquare)
                 user.userprofile.question=question
                 user.userprofile.save()
                 #dbsquares = Square.objects.filter(x__in=charsx,y__in=charsy)
@@ -337,6 +342,12 @@ def editmap(request):
         # end of command: move_view
         if sent_action == 'change_mode':
             sent_mode = request.POST.get('newmode')
+           
+            sent_beacon_area = request.POST.get('beacon_area_text')
+            sent_beacon_area_s = request.POST.get('beacon_area_strength')
+            print('area')
+            print(sent_beacon_area)
+            print(sent_beacon_area_s)
             try:
                 label_text= request.POST.get('label_text')
                 print('labeltest'+label_text)
@@ -345,6 +356,9 @@ def editmap(request):
             question_text= request.POST.get('question_text')
             user.userprofile.mode=sent_mode
             user.userprofile.temp_label_holder=label_text
+            user.userprofile.temp_question_area_holder=sent_beacon_area
+            user.userprofile.temp_question_area_strength_holder=sent_beacon_area_s
+            
             user.userprofile.save()
             myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
             overlays=getLabels(user,dbsquares,30)
@@ -423,6 +437,11 @@ def editmap(request):
                 square.save()
             except Square.DoesNotExist:
                 print('no square at there')
+
+        if user.userprofile.mode=='beacon':
+            beac = Beacon.objects.create(x=sent_x, y=sent_y, name='beacon', question_area1=user.userprofile.temp_question_area_holder,question_area1_strength=user.userprofile.temp_question_area_strength_holder)
+            beac.save()
+
 
 
               
@@ -512,3 +531,56 @@ def load_questions_from_file():
                 difficulty=row['difficulty'],
             )
 
+def get_question(endsquare):
+    beaconslist=find_closest_beacons(int(endsquare.x),int(endsquare.y))
+    colorfractions=get_color_fractions(int(endsquare.x),int(endsquare.y),beaconslist)
+    for ke,th in colorfractions.items():
+        print(ke)
+        print(th)
+    total_intensity = sum(colorfractions.values())
+
+    random_num = random.uniform(0, total_intensity)
+
+    for color, intensity in colorfractions.items():
+        random_num -= intensity
+        if random_num <= 0:
+            chosen_color = color
+            break
+
+    random_question = Question.objects.filter(difficulty__lte=3).filter(area3=chosen_color).order_by('?').first()
+
+    return random_question
+
+def find_closest_beacons(x, y):
+    # Retrieve all beacons from the database
+    all_beacons = Beacon.objects.all()
+
+    # Calculate the distance between each beacon and the given position
+    distances = []
+    for beacon in all_beacons:
+        distance = math.sqrt((beacon.x - x) ** 2 + (beacon.y - y) ** 2)
+        distances.append((beacon, distance))
+
+    # Sort the beacons based on their distance
+    sorted_beacons = sorted(distances, key=lambda x: x[1])
+
+    # Return the top five closest beacons
+    closest_beacons = [beacon[0] for beacon in sorted_beacons[:5]]
+
+    return closest_beacons
+
+def distance(x1, y1, x2, y2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+def get_color_fractions(x, y, beacons):
+    color_fractions = {}
+    total_strength = 0
+    for beacon in beacons:
+        d = distance(x, y, beacon.x, beacon.y)
+        strength = beacon.question_area1_strength * (1 / (d ** 2 + 1))
+        color = beacon.question_area1
+        color_fractions[color] = color_fractions.get(color, 0) + strength
+        total_strength += strength
+    for color in color_fractions:
+        color_fractions[color] = round(color_fractions[color] / total_strength * 100, 2)
+    return color_fractions

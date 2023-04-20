@@ -317,22 +317,28 @@ body{ margin: 0}
       Ändra mode
 
       <br>
-      <button onclick="changeTheMode('move','')" class="btn btn-success btn-sm">Flytta</button>
-      <button onclick="changeTheMode('paint sea','')" class="btn btn-success btn-sm">Måla Hav</button>
-      <button onclick="changeTheMode('paint land','')" class="btn btn-success btn-sm">Måla Land</button>
-      <button onclick="changeTheMode('delete','')" class="btn btn-success btn-sm">Radera</button>
+      <button onclick="changeTheMode('move','',0)" class="btn btn-success btn-sm">Flytta</button>
+      <button onclick="changeTheMode('paint sea','',0)" class="btn btn-success btn-sm">Måla Hav</button>
+      <button onclick="changeTheMode('paint land','',0)" class="btn btn-success btn-sm">Måla Land</button>
+      <button onclick="changeTheMode('delete','',0)" class="btn btn-success btn-sm">Radera</button>
       <br> 
       <br>
 
 
       <input type="text" name="label_text" id="label_text" maxlength="20" size="20" value="{{ user.userprofile.temp_label_holder }}">
 
-      <button onclick="changeTheMode('addlabel', document.getElementById('label_text').value)" class="btn btn-success btn-sm">Etikett</button>
+      <button onclick="changeTheMode('addlabel', document.getElementById('label_text').value),0" class="btn btn-success btn-sm">Etikett</button>
       <br>
       
       <input type="text" name="question_text" id="question_text" maxlength="20" size="20" value="{{ user.userprofile.temp_question_holder }}">
 
-      <button onclick="changeTheMode('questionarea1', document.getElementById('question_text').value)" class="btn btn-success btn-sm">Frågeområde</button>
+      <button onclick="changeTheMode('questionarea1', document.getElementById('question_text').value,0)" class="btn btn-success btn-sm">Frågeområde</button>
+      <br>
+
+      <input type="text" name="beacon_area" id="beacon_area" maxlength="20" size="20" value="{{ user.userprofile.temp_question_area_holder }}">
+      <input type="text" name="beacon_area_strength" id="beacon_area_strength" maxlength="20" size="20" value="{{ user.userprofile.temp_question_area_strength_holder }}">
+
+      <button onclick="changeTheMode('beacon', document.getElementById('beacon_area').value,document.getElementById('beacon_area_strength').value)" class="btn btn-success btn-sm">Beacon</button>
 
 
 
@@ -394,7 +400,7 @@ body{ margin: 0}
 
 }
 
-function changeTheMode(newmode,label_text) {
+function changeTheMode(newmode,label_text,number) {
 
   var command_input = document.createElement('input');
   command_input.type = 'hidden';
@@ -416,6 +422,16 @@ function changeTheMode(newmode,label_text) {
   question_input.name = 'question_text';
   question_input.value = label_text;
 
+  var beacon_input = document.createElement('input');
+  beacon_input.type = 'hidden';
+  beacon_input.name = 'beacon_area_text';
+  beacon_input.value = label_text;
+
+  var beacon_input_strength = document.createElement('input');
+  beacon_input_strength.type = 'hidden';
+  beacon_input_strength.name = 'beacon_area_strength';
+  beacon_input_strength.value = number;
+
   //questionarea1
   //alert("Selected value: " + dropdownValue);
   //console.log('Dropdown value:', document.getElementById('dropdown').value);
@@ -425,6 +441,8 @@ function changeTheMode(newmode,label_text) {
   form.appendChild(answer_input);
   form.appendChild(label_input);
   form.appendChild(question_input);
+  form.appendChild(beacon_input);
+  form.appendChild(beacon_input_strength);
   form.submit();
  
 }
