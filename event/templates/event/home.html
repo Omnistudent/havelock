@@ -347,8 +347,16 @@ var buttons = document.querySelectorAll('.answer-button');
 buttons.forEach(function(button) {
   var textLength = button.textContent.length;
   if (textLength > 40) {
-    var fontSize = Math.floor(1000 / textLength); // adjust as needed
+    var fontSize = 10; // adjust as needed
     button.style.fontSize = fontSize + 'px';
+  }
+
+  else if (textLength > 30){
+  button.style.fontSize = 15 + 'px';
+  }
+  else
+  {
+    button.style.fontSize = 20 + 'px';
   }
 });
 
