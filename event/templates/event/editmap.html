@@ -152,8 +152,6 @@ body{ margin: 0}
 
 }
 
-
-
 .square {
   width: 30px;
   height: 30px;
@@ -166,9 +164,8 @@ body{ margin: 0}
   font-size: initial; /* Set font-size back to initial value */
 }
 
-
-  .ship {
-    width: 30px;
+.ship {
+   width: 30px;
     height: 30px;
     background-image: url("{{ STATIC_URL }}event/images/sea1_50.png");
     background-repeat: no-repeat;
@@ -177,7 +174,7 @@ body{ margin: 0}
     transform: translate(-11px, -11px);
   }
 
-  .land {
+.land {
     width: 30px;
     height: 30px;
     background-image: url("{{ STATIC_URL }}event/images/land1_50.png");
@@ -187,19 +184,20 @@ body{ margin: 0}
     transform: translate(-11px, -11px);
   }
 
-  .icon {
+.icon {
     width: 50px;
     height: 50px;
-    background-image: url("{{ STATIC_URL }}event/images/ship1.png");
+    background-image: url("{{ STATIC_URL }}event/images/ship3.png");
     background-repeat: no-repeat;
     background-position: center center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    background-size: contain;
+    position: relative;
+
+    z-index: 2;
     transform: translate(-50%, -50%);
   }
 
-  .overlay {
+.overlay {
         position: absolute;
         top: 0px;
         left: 80px;
@@ -263,18 +261,25 @@ body{ margin: 0}
                       <div class="icon"></div>
                       {% endif %} <!-- End of is user in square-->
 
-                  <!--<div class="icon"></div>-->
                 </div>
                   {% else %}
                   <div class="land">
-                  <!--<div class="icon"></div>-->
+
                   </div>
                   {% endif %}
-               
                 {% endif %}
                 {%endwith%}
                 
                 <!--i cut the old code out from here -->
+                {% for beacon in beacons %}
+
+                {% if beacon.x|stringformat:"s" == col_num_x|stringformat:"s" and beacon.y|stringformat:"s" == row_num_y|stringformat:"s" %}  
+                <div class="icon"></div>
+                {% endif %}
+                <!--<div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>-->
+                <div class="overlay" style="top: {{ maptext.1|add:0 }}px; left:{{ maptext.2|add:0 }}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
+                {% endfor %}
+
               </div>
             {% endfor %} <!--End of colx in myrange_x-->
             <br>
@@ -284,6 +289,8 @@ body{ margin: 0}
         <!--<div class="overlay" style="top: {{ maptext.1 }}px; left:{{maptext.2}}px"></div>-->
         <div class="overlay" style="top: {{ maptext.1|add:0 }}px; left:{{ maptext.2|add:0 }}px; background-image: url('{{ STATIC_URL }}event/images/{{ maptext.0 }}')"></div>
         {% endfor %}
+
+
         
       </div> <!--end of gridcontainer-->
     </center>

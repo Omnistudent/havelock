@@ -338,7 +338,8 @@ def editmap(request):
 
             myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
             overlays=getLabels(user,dbsquares,30)
-            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+            beacons=Beacon.objects.all()
+            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'beacons':beacons})
         # end of command: move_view
         if sent_action == 'change_mode':
             sent_mode = request.POST.get('newmode')
@@ -363,8 +364,8 @@ def editmap(request):
             myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
             overlays=getLabels(user,dbsquares,30)
             label_text= request.POST.get('label_text')
-            print('heres the label text'+label_text)
-            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+            beacons=Beacon.objects.all()
+            return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'beacons':beacons})
 
 
 
@@ -451,7 +452,8 @@ def editmap(request):
         # Send ranges,database,question and randomly ordered answers
         myrange_x,myrange_y,dbsquares=getDatabaseAndView(user.userprofile.x,user.userprofile.y,grid_size_x,grid_size_y)
         overlays=getLabels(user,dbsquares,30)
-        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+        beacons=Beacon.objects.all()
+        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'beacons':beacons})
     # end of if request was post
 
 
@@ -461,9 +463,8 @@ def editmap(request):
 
         # Send ranges,database,question and randomly ordered answers
         overlays=getLabels(user,dbsquares,30)
-
-        
-        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays})
+        beacons=Beacon.objects.all()
+        return render(request,'event/editmap.html',{'myrange_x':myrange_x,'myrange_y':myrange_y,'squaredb':dbsquares,'question':question,'answers':answers,'overlays':overlays,'beacons':beacons})
 
 def get_image_size(file_path):
     with Image.open(file_path) as img:
