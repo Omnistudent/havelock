@@ -14,10 +14,9 @@ body{ margin: 0}
 
 .button-container {
     .button-container {
-                width: 500px;
+                width: 450px;
                 height: 300px;
-                display: flex;
-                flex-wrap: wrap;
+
                 justify-content: center;
                 border: 1px solid #000000;
                 background-color: rgb(239, 236, 226);
@@ -26,7 +25,7 @@ body{ margin: 0}
 
     .button-container button {
       font-family: "IM Fell DW Pica","EB Garamond", serif;
-        width: 150px;
+        width: 200px;
         height: 90px;
         margin: 10px;
         font-size: 15px;
@@ -44,7 +43,7 @@ body{ margin: 0}
 }
 
 .answer-button {
-  max-width: 200px; /* adjust as needed */
+  width: 450px; /* adjust as needed */
   font-size: 15px; /* default font size */
 }
 .container {
@@ -76,8 +75,8 @@ body{ margin: 0}
   height: 200px;
   font-family: "IM Fell DW Pica","EB Garamond", serif;
   font-weight: bold;
-  gap: 10px;
-  padding: 10px;
+  gap: 5px;
+  padding: 5px;
   box-sizing: border-box;
   position: relative;
   border: 1px solid #000000;
@@ -103,7 +102,7 @@ body{ margin: 0}
   width: {{myrange_x|length|multiply:30|add:30 }}px; 
   height: {{myrange_y|length|multiply:30|add:30 }}px;
   position: relative;
-  border: 1px solid #000000;
+  border: 0px solid #000000;
   padding: 0px;
   display: flex;
   align-items: center;
@@ -162,8 +161,8 @@ body{ margin: 0}
 
 
 .square {
-  width: 30px;
-  height: 30px;
+  width: 29.5px;
+  height: 29.5px;
   display: inline-block;
   margin: 0px;
   padding: 0px;
@@ -344,21 +343,32 @@ body{ margin: 0}
 
 var buttons = document.querySelectorAll('.answer-button');
 
+
+
+// Find the smallest text length
+var smallestLength = Infinity;
 buttons.forEach(function(button) {
   var textLength = button.textContent.length;
-  if (textLength > 40) {
-    var fontSize = 10; // adjust as needed
-    button.style.fontSize = fontSize + 'px';
-  }
-
-  else if (textLength > 30){
-  button.style.fontSize = 15 + 'px';
-  }
-  else
-  {
-    button.style.fontSize = 20 + 'px';
+  if (textLength < smallestLength) {
+    smallestLength = textLength;
   }
 });
+
+// Set the font size for all buttons based on the smallest text length
+var fontSize = 17; // default font size
+if (smallestLength > 30) {
+  fontSize = 14;
+}
+if (smallestLength > 35) {
+  fontSize = 9;
+}
+buttons.forEach(function(button) {
+  button.style.fontSize = fontSize + 'px';
+});
+
+
+
+
 
   function updatePage(x, y) {
 

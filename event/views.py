@@ -48,6 +48,7 @@ def help(request):
         {})
 
 def home(request):
+    #load_questions_from_file()
     if not request.user.is_authenticated:
 
             # Generate a random username and password
@@ -176,7 +177,6 @@ def home(request):
 
         try:
             sent_x = request.POST.get('sent_x')
-            print('sent x'+sent_x)
         except:
             print('could not get x')
 
@@ -188,7 +188,7 @@ def home(request):
         # User wants to move, create a question
         if user.userprofile.mode=="move":
             
-            #load_questions_from_file()
+            
             #export_questions_to_csv()
             if moveallowed(user.userprofile.xpos,sent_x,user.userprofile.ypos,sent_y):
 
@@ -279,23 +279,22 @@ def getLabels(user,gottendata,squaresize):
     labeled_squares = gottendata.exclude(Q(map_label__isnull=True) | Q(map_label__exact='')).all()
     returnArray=[]
     static_images_path = os.path.join(settings.STATICFILES_DIRS[0], 'event/images')
-    print(static_images_path)
     for lab in labeled_squares:
         image_location=os.path.join(static_images_path, lab.map_label)
         try:
             width, height = get_image_size(image_location)
-            print(f'The image size is {width}x{height} pixels.')
+
         except:
-            print(image_location)
+
             width=0
             height=0
         xcoord=int(lab.x)-int(user.userprofile.x)
         ycoord=int(lab.y)-int(user.userprofile.y)
         xPixels=(xcoord*squaresize)-squaresize*2
         yPixels=ycoord*squaresize-squaresize*2
-        print('xpixels:'+str(xPixels))
+
         returnArray.append([lab.map_label,yPixels,xPixels])
-        print(lab.map_label)
+
 
     return returnArray
 
@@ -326,7 +325,7 @@ def editmap(request):
         sent_action = request.POST.get('command')
         sent_answer = request.POST.get('answer')
         
-        print("sent_action was:"+sent_action)
+
         if sent_action == 'move_view':
             sent_x = request.POST.get('sent_x')
             sent_y = request.POST.get('sent_y')
@@ -346,9 +345,7 @@ def editmap(request):
            
             sent_beacon_area = request.POST.get('beacon_area_text')
             sent_beacon_area_s = request.POST.get('beacon_area_strength')
-            print('area')
-            print(sent_beacon_area)
-            print(sent_beacon_area_s)
+
             try:
                 label_text= request.POST.get('label_text')
                 print('labeltest'+label_text)
@@ -506,7 +503,7 @@ def export_questions_to_csv():
 
 def load_questions_from_file():
     with open(f"test.csv", mode='r', encoding='UTF-16', newline='') as csv_file:
-        reader = csv.DictReader(csv_file, fieldnames=['id', 'name', 'question_swedish', 'answer1_swedish', 'answer2_swedish', 'answer3_swedish', 'answer4_swedish', 'question_english', 'answer1_english', 'answer2_english', 'answer3_english', 'answer4_english', 'area1', 'area2', 'area3', 'difficulty'], delimiter='\t')
+        reader = csv.DictReader(csv_file, fieldnames=['id', 'name', 'question_swedish', 'answer1_swedish', 'answer2_swedish', 'answer3_swedish', 'answer4_swedish', 'question_english', 'answer1_english', 'answer2_english', 'answer3_english', 'answer4_english', 'area1', 'area2', 'area3', 'area4', 'area5', 'difficulty'], delimiter='\t')
         # Skip header row
         next(reader)
         # Clear existing questions
@@ -529,28 +526,44 @@ def load_questions_from_file():
                 area1=row['area1'],
                 area2=row['area2'],
                 area3=row['area3'],
+                area4=row['area4'],
+                area5=row['area5'],
                 difficulty=row['difficulty'],
             )
 
+
+
 def get_question(endsquare):
-    beaconslist=find_closest_beacons(int(endsquare.x),int(endsquare.y))
-    colorfractions=get_color_fractions(int(endsquare.x),int(endsquare.y),beaconslist)
-    for ke,th in colorfractions.items():
-        print(ke)
-        print(th)
+    beaconslist = find_closest_beacons(int(endsquare.x), int(endsquare.y))
+    colorfractions = get_color_fractions(int(endsquare.x), int(endsquare.y), beaconslist)
     total_intensity = sum(colorfractions.values())
 
     random_num = random.uniform(0, total_intensity)
+    print(colorfractions.items())
 
     for color, intensity in colorfractions.items():
         random_num -= intensity
         if random_num <= 0:
             chosen_color = color
+            chosen_beacon = Beacon.objects.filter(question_area1=color).order_by('?').first()
             break
 
-    random_question = Question.objects.filter(difficulty__lte=3).filter(area3=chosen_color).order_by('?').first()
+    d = distance(endsquare.x, endsquare.y, chosen_beacon.x, chosen_beacon.y)-chosen_beacon.buffer
+    #difficulty = 2+round(5 * (1 / (d ** 2 + 1)))
+    difficulty=get_difficulty(d)
 
+    #random_question = Question.objects.filter(difficulty__lte=5).filter(area3=chosen_color).order_by('?').first()
+
+    random_question = Question.objects.filter(difficulty__exact=difficulty).filter(area3=chosen_color).order_by('?').first()
+    if random_question is None:
+        print('wuestion was none')
+        random_question = Question.objects.filter(area3=chosen_color).order_by('?').first()
+
+    print('distance'+str(d))
+    print('difficulty'+str(difficulty))
+    print('kind'+str(chosen_color))
     return random_question
+
 
 def find_closest_beacons(x, y):
     # Retrieve all beacons from the database
@@ -571,6 +584,10 @@ def find_closest_beacons(x, y):
     return closest_beacons
 
 def distance(x1, y1, x2, y2):
+    x1 = float(x1)
+    y1 = float(y1)
+    x2 = float(x2)
+    y2 = float(y2)
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
 def get_color_fractions(x, y, beacons):
@@ -585,3 +602,18 @@ def get_color_fractions(x, y, beacons):
     for color in color_fractions:
         color_fractions[color] = round(color_fractions[color] / total_strength * 100, 2)
     return color_fractions
+
+def get_difficulty(dist):
+    if dist<2:
+        return 5.0
+    elif dist<3:
+        return 4.0
+    elif dist<4:
+        return 3.0
+    elif dist<5:
+        return 2.0
+    elif dist<6:
+        return 1.0
+    else:
+        return 0.0
+

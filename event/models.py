@@ -22,25 +22,25 @@ class Venue(models.Model):
 class Question(models.Model):
     name=models.CharField('Question_name',max_length=120,default='question_name')
     
-    question_swedish=models.CharField('question_swedish',max_length=1000,default='swedish_question')
-    answer1_swedish=models.CharField('answer1_swedish',max_length=1000,default='swedish_answer1')
-    answer2_swedish=models.CharField('answer2_swedish',max_length=1000,default='swedish_answer2')
-    answer3_swedish=models.CharField('answer3_swedish',max_length=1000,default='swedish_answer3')
-    answer4_swedish=models.CharField('answer4_swedish',max_length=1000,default='swedish_answer4')
+    question_swedish=models.CharField('question_swedish',max_length=300,default='swedish_question')
+    answer1_swedish=models.CharField('answer1_swedish',max_length=300,default='swedish_answer1')
+    answer2_swedish=models.CharField('answer2_swedish',max_length=300,default='swedish_answer2')
+    answer3_swedish=models.CharField('answer3_swedish',max_length=300,default='swedish_answer3')
+    answer4_swedish=models.CharField('answer4_swedish',max_length=300,default='swedish_answer4')
     
-    question_english=models.CharField('question_english',max_length=1000,default='english_question')
-    answer1_english=models.CharField('answer1_english',max_length=1000,default='english_answer1')
-    answer2_english=models.CharField('answer2_english',max_length=1000,default='english_answer2')
-    answer3_english=models.CharField('answer3_english',max_length=1000,default='english_answer3')
-    answer4_english=models.CharField('answer4_english',max_length=1000,default='english_answer4')
+    question_english=models.CharField('question_english',max_length=300,default='english_question')
+    answer1_english=models.CharField('answer1_english',max_length=300,default='english_answer1')
+    answer2_english=models.CharField('answer2_english',max_length=300,default='english_answer2')
+    answer3_english=models.CharField('answer3_english',max_length=300,default='english_answer3')
+    answer4_english=models.CharField('answer4_english',max_length=300,default='english_answer4')
     correct_answer=models.IntegerField('correct_answer',default=0)
 
     difficulty=models.FloatField('difficulty',max_length=20,default='0.0')
-    area1=models.CharField('area1',max_length=1000,default='general')
-    area2=models.CharField('area2',max_length=1000,default='area2')
-    area3=models.CharField('area3',max_length=1000,default='area3')
-
-
+    area1=models.CharField('area1',max_length=300,default='general')
+    area2=models.CharField('area2',max_length=300,default='area2')
+    area3=models.CharField('area3',max_length=300,default='area3')
+    area4=models.CharField('area4',max_length=300,default='area4')
+    area5=models.CharField('area5',max_length=300,default='area5')
 
     def __str__(self):
 	    return self.name
@@ -121,6 +121,7 @@ class Beacon(models.Model):
 	question_area2=models.CharField('questionarea2',max_length=120,blank=True)
 	question_area3=models.CharField('questionarea3',max_length=120,blank=True)
 	question_area4=models.CharField('questionarea4',max_length=120,blank=True)
+	buffer=models.IntegerField('buffer',default=0)
 	def __str__(self):
 		return self.name
 
@@ -147,12 +148,8 @@ class Square(models.Model):
 	map_label=models.CharField('map_label',max_length=120,blank=True)
 	question_area1=models.CharField('question1',max_length=120,blank=True)
 	
-
-
 	def __str__(self):
 		return self.name
-
-
 
 
 
