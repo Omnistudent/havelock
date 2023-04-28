@@ -554,7 +554,7 @@ def get_question(endsquare):
 
     #random_question = Question.objects.filter(difficulty__lte=5).filter(area3=chosen_color).order_by('?').first()
 
-    random_question = Question.objects.filter(difficulty__exact=difficulty).filter(area3=chosen_color).order_by('?').first()
+    random_question = Question.objects.filter(difficulty__lte=difficulty).filter(area3=chosen_color).order_by('?').first()
     if random_question is None:
         print('wuestion was none')
         random_question = Question.objects.filter(area3=chosen_color).order_by('?').first()
